@@ -1,0 +1,2 @@
+DEL *.pyd
+DEL *.dll
