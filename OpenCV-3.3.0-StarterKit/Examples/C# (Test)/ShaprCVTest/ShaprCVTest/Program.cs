@@ -11,9 +11,25 @@ namespace ShaprCVTest
 		{
 			//CreateWindow 		("This Is Window Name");
 			//DrawExampleStuff 	();
-           	VideoExampleStuff	();
+			//VideoExampleStuff	();
+			DetectCups();
 		}
 
+		public static void DetectCups()
+		{
+			string windowName = "Cup Detector";
+
+			//Mat image = CvInvoke.Imread("C:\\Users\\jwuertz\\Documents\\GitHub\\OpenCVObstructionTracking\\OpenCV-3.3.0-StarterKit\\Examples\\C# (Test)\\ShaprCVTest\\ShaprCVTest\\Images\\Cups.jpg");
+			Mat image = CvInvoke.Imread("C:\\Cups.jpg", LoadImageType.AnyColor);
+
+			CvInvoke.Imshow(windowName, image);
+			//Wait for the key pressing event
+			//Destroy the window if key is pressed
+			CvInvoke.WaitKey(0);
+			CvInvoke.DestroyWindow(windowName);
+
+		}
+		/*
 		public static void CreateWindow (string WindowName)
 		{ 
 			CvInvoke.NamedWindow (WindowName); 					//Create the window using the specific name
@@ -148,9 +164,9 @@ namespace ShaprCVTest
 				// The image matrix will be passed as a parameter.
 				cv::setMouseCallback(windowName, &mouseEvent, &frame);
 			 */
-
+		/*
 			Console.WriteLine("ShaprCVTest: Ended Video Function.");
 		}
-
+	*/
 	}
 }
