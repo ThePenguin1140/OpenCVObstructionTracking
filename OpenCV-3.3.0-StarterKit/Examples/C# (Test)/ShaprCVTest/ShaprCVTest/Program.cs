@@ -21,14 +21,18 @@ namespace ShaprCVTest
 			string windowName = "Cup Detector";
 
 
-
+			//Load image
 			Mat input_image = CvInvoke.Imread("..\\..\\Images\\Cups.jpg", LoadImageType.AnyColor);
-			Image<Bgr, Byte> resized_image = new Image<Bgr, Byte>(500, 500);
+
+			//Resize image
 			Size size = new Size(500, 500);
+			Image<Bgr, Byte> resized_image = new Image<Bgr, Byte>(size);
 			CvInvoke.Resize(input_image, resized_image, size);
-			CvInvoke.GaussianBlur(resized_image, resized_image, new System.Drawing.Size(31, 31), 0, 0);
-			Image<Hsv, Byte> hsv_image = new Image<Hsv, Byte>(500, 500);
-			Image<Gray, Byte> filtered_image = new Image<Gray, Byte>(500, 500);
+
+
+			CvInvoke.GaussianBlur(resized_image, resized_image, new Size(31, 31), 0, 0);
+			Image<Hsv, Byte> hsv_image = new Image<Hsv, Byte>(size);
+			Image<Gray, Byte> filtered_image = new Image<Gray, Byte>(size);
 
 			CvInvoke.CvtColor(resized_image, hsv_image, ColorConversion.Bgr2Hsv);
 
@@ -53,7 +57,7 @@ namespace ShaprCVTest
 			Console.Write(tree);
 
 			Bgr bgrRed = new Bgr(Color.Red);
-			Image<Bgr, Byte> output_image = new Image<Bgr, Byte>(filtered_image.Size);
+			Image<Bgr, Byte> output_image = new Image<Bgr, Byte>(size);
 
 			CvInvoke.CvtColor(filtered_image, output_image, ColorConversion.Gray2Bgr);
 
