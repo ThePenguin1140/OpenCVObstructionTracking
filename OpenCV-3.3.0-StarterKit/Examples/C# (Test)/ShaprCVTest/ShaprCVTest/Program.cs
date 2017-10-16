@@ -19,10 +19,26 @@ namespace ShaprCVTest
 		{
 			string windowName = "Cup Detector";
 
-			//Mat image = CvInvoke.Imread("C:\\Users\\jwuertz\\Documents\\GitHub\\OpenCVObstructionTracking\\OpenCV-3.3.0-StarterKit\\Examples\\C# (Test)\\ShaprCVTest\\ShaprCVTest\\Images\\Cups.jpg");
-			Mat image = CvInvoke.Imread("C:\\Cups.jpg", LoadImageType.AnyColor);
 
-			CvInvoke.Imshow(windowName, image);
+
+			//Mat image = CvInvoke.Imread("C:\\Users\\jwuertz\\Documents\\GitHub\\OpenCVObstructionTracking\\OpenCV-3.3.0-StarterKit\\Examples\\C# (Test)\\ShaprCVTest\\ShaprCVTest\\Images\\Cups.jpg");
+			Mat input_image = CvInvoke.Imread("C:\\Cups.jpg", LoadImageType.AnyColor);
+			Image<Bgr, Byte> resized_image = new Image<Bgr, Byte>(500, 500);
+			System.Drawing.Size size = new System.Drawing.Size(500, 500);
+			CvInvoke.Resize(input_image, resized_image, size);
+
+			Image<Hsv, Byte> hsv_image = new Image<Hsv, Byte>(500, 500);
+			Image<Hsv, Byte> filtered_image = new Image<Hsv, Byte>(500, 500);
+
+			CvInvoke.CvtColor(resized_image, hsv_image, ColorConversion.Bgr2Hsv);
+
+			ScalarArray lower = new ScalarArray(new Hsv(0,0,0).MCvScalar);
+			ScalarArray upper = new ScalarArray(new Hsv(100,255,255).MCvScalar);
+
+
+			CvInvoke.InRange(hsv_image, lower, upper, filtered_image);
+
+			CvInvoke.Imshow(windowName, filtered_image); 
 			//Wait for the key pressing event
 			//Destroy the window if key is pressed
 			CvInvoke.WaitKey(0);
