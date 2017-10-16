@@ -26,7 +26,7 @@ namespace ShaprCVTest
 
 
 			//Mat image = CvInvoke.Imread("C:\\Users\\jwuertz\\Documents\\GitHub\\OpenCVObstructionTracking\\OpenCV-3.3.0-StarterKit\\Examples\\C# (Test)\\ShaprCVTest\\ShaprCVTest\\Images\\Cups.jpg");
-			Mat input_image = CvInvoke.Imread("C:\\Cups.jpg", LoadImageType.AnyColor);
+			Mat input_image = CvInvoke.Imread("..\\..\\Images\\Cups.jpg", LoadImageType.AnyColor);
 			Image<Bgr, Byte> resized_image = new Image<Bgr, Byte>(500, 500);
 			System.Drawing.Size size = new System.Drawing.Size(500, 500);
 			CvInvoke.Resize(input_image, resized_image, size);
