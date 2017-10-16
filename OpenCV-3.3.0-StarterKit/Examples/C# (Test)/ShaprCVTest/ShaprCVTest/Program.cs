@@ -34,7 +34,9 @@ namespace ShaprCVTest
 			Image<Gray, Byte> filtered_image = new Image<Gray, Byte>(size);
 			CvInvoke.InRange(preprocessed_image, lower, upper, filtered_image);
 
-			Image<Bgr, Byte> output_image = new Image<Bgr, Byte>(size);
+			Image<Bgr, Byte> output_image = new Image<Bgr, Byte>(input_image.Size);
+			output_image = input_image.ToImage<Bgr, Byte>();
+			CvInvoke.Resize(output_image, output_image, size);
 			DrawBoundingBoxes(filtered_image, output_image);
 
 			CvInvoke.Imshow(windowName, output_image);
@@ -62,8 +64,6 @@ namespace ShaprCVTest
 			Console.Write(tree);
 
 			Bgr bgrRed = new Bgr(Color.Red);
-
-			CvInvoke.CvtColor(input, output, ColorConversion.Gray2Bgr);
 
 			for (int i = 0; i < contours.Size; i++)
 			{
