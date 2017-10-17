@@ -5,11 +5,6 @@
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.ItemProperties.ShaprCVTest PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="ShaprCVTest\Program.cs">
-    <Files>
-      <File FileName="ShaprCVTest\Program.cs" Line="2" Column="7" />
-      <File FileName="ShaprCVTest\packages.config" Line="1" Column="1" />
-    </Files>
-  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workbench />
   <MultiItemStartupConfigurations />
 </Properties>
