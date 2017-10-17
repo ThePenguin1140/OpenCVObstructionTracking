@@ -1,0 +1,15 @@
+﻿<Properties StartupConfiguration="{F83FFFB8-C798-4BA9-8BB2-BB7326B18193}|Default">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.ItemProperties.ShaprCVTest PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="ShaprCVTest\Program.cs">
+    <Files>
+      <File FileName="ShaprCVTest\Program.cs" Line="2" Column="7" />
+      <File FileName="ShaprCVTest\packages.config" Line="1" Column="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MultiItemStartupConfigurations />
+</Properties>
