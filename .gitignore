@@ -1,3 +1,41 @@
+# Autosave files
+*~
 
-*.csproj
-OpenCV-3.3.0-StarterKit/Examples/C# (Test)/ShaprCVTest/ShaprCVTest/ShaprCVTest.csproj
+# build
+[Oo]bj/
+[Bb]in/
+[Pp]ackages/
+[Rr]eferences/
+TestResults/
+
+# globs
+Makefile.in
+*.DS_Store
+*.sln.cache
+*.suo
+*.cache
+*.pidb
+*.userprefs
+*.usertasks
+config.log
+config.make
+config.status
+aclocal.m4
+install-sh
+autom4te.cache/
+*.user
+*.tar.gz
+tarballs/
+test-results/
+Thumbs.db
+
+# Mac bundle stuff
+*.dmg
+*.app
+
+# resharper
+*_Resharper.*
+*.Resharper
+
+# dotCover
+*.dotCover

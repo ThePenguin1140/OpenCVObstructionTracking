@@ -1,2 +1,0 @@
-DEL *.pyd
-DEL *.dll
