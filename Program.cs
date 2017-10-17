@@ -52,11 +52,12 @@ namespace ShaprCVTest {
       Image<Gray, byte> erode2_image = thresholded_image.Erode( 3 );
 
       VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint();
-      Mat tree = new Mat();
 
-      CvInvoke.FindContours( erode2_image, contours, tree, RetrType.Tree, ChainApproxMethod.ChainApproxSimple );
+      int[,] tree = CvInvoke.FindContourTree( erode2_image, contours, ChainApproxMethod.ChainApproxSimple );
 
-      Console.Write( tree );
+      foreach ( int branch in tree ) {
+        Console.WriteLine( branch );
+      }
 
       Bgr bgrRed = new Bgr( Color.Red );
 
