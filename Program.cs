@@ -55,18 +55,22 @@ namespace ShaprCVTest {
 
       int[,] tree = CvInvoke.FindContourTree( erode2_image, contours, ChainApproxMethod.ChainApproxSimple );
 
-      foreach ( int branch in tree ) {
-        Console.WriteLine( branch );
+      for ( int n = 0; n < tree.Length/4; n++ ) {
+        for ( int m = 0; m < 4; m++ ) {
+          Console.Write( tree[n, m] + ", " );
+        }
+        Console.WriteLine();
       }
 
       Bgr bgrRed = new Bgr( Color.Red );
 
       for ( int i = 0; i < contours.Size; i++ ) {
         Rectangle box = CvInvoke.BoundingRectangle( contours[i] );
-        if ( ( box.Width < 400 && box.Height < 400 ) &&
+        /*if ( ( box.Width < 400 && box.Height < 400 ) &&
             ( box.Width > 20 && box.Height > 20 ) ) {
           output.Draw( box, bgrRed, 2 );
-        }
+        }*/
+        output.Draw( box, bgrRed, 2 );
       }
     }
 
