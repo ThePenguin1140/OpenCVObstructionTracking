@@ -33,7 +33,7 @@ namespace ShaprCVTest {
       Image<Bgr, byte> output_image = new Image<Bgr, byte>( input_image.Size );
       output_image = input_image.ToImage<Bgr, byte>();
       CvInvoke.Resize( output_image, output_image, size );
-      GetContours( filtered_image, output_image );
+      GetContours( filtered_image );
 
       CvInvoke.Imshow( windowName, output_image );
       //CvInvoke.Imshow(windowName, contours_image);
@@ -44,7 +44,7 @@ namespace ShaprCVTest {
 
     }
 
-    private static void GetContours( Image<Gray, byte> input, Image<Bgr, byte> output ) {
+    private static VectorOfVectorOfPoint GetContours( Image<Gray, byte> input ) {
       Image<Gray, float> laplace_image = input.Laplace( 3 );
       Image<Gray, float> erode_image = laplace_image.Erode( 2 );
       Image<Gray, byte> byteErode_image = erode_image.Convert<Gray, byte>();
@@ -76,16 +76,7 @@ namespace ShaprCVTest {
                                    );
 
 
-      Bgr bgrRed = new Bgr( Color.Red );
-
-      for ( int i = 0; i < contours.Size; i++ ) {
-        Rectangle box = CvInvoke.BoundingRectangle( contours[i] );
-        /*if ( ( box.Width < 400 && box.Height < 400 ) &&
-            ( box.Width > 20 && box.Height > 20 ) ) {
-          output.Draw( box, bgrRed, 2 );
-        }*/
-        output.Draw( box, bgrRed, 2 );
-      }
+      return contours;
     }
 
     private static void Preprocess( Mat input, Image<Hsv, byte> output, Size size ) {
