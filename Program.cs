@@ -62,6 +62,20 @@ namespace ShaprCVTest {
         Console.WriteLine();
       }
 
+      //Crop the image
+      Rectangle frame = CvInvoke.BoundingRectangle( contours[0] );
+      Rectangle roi = new Rectangle(
+                                    new Point(
+                                      frame.X,
+                                      frame.Y
+                                             ),
+                                    new Size(
+                                      frame.Width - 200,
+                                      frame.Height - 250
+                                     )
+                                   );
+
+
       Bgr bgrRed = new Bgr( Color.Red );
 
       for ( int i = 0; i < contours.Size; i++ ) {
