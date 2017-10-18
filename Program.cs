@@ -33,7 +33,7 @@ namespace ShaprCVTest {
       Image<Bgr, byte> output_image = new Image<Bgr, byte>( input_image.Size );
       output_image = input_image.ToImage<Bgr, byte>();
       CvInvoke.Resize( output_image, output_image, size );
-      DrawBoundingBoxes( filtered_image, output_image );
+      GetContours( filtered_image, output_image );
 
       CvInvoke.Imshow( windowName, output_image );
       //CvInvoke.Imshow(windowName, contours_image);
@@ -44,7 +44,7 @@ namespace ShaprCVTest {
 
     }
 
-    private static void DrawBoundingBoxes( Image<Gray, byte> input, Image<Bgr, byte> output ) {
+    private static void GetContours( Image<Gray, byte> input, Image<Bgr, byte> output ) {
       Image<Gray, float> laplace_image = input.Laplace( 3 );
       Image<Gray, float> erode_image = laplace_image.Erode( 2 );
       Image<Gray, byte> byteErode_image = erode_image.Convert<Gray, byte>();
