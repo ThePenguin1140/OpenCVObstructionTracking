@@ -33,7 +33,7 @@ namespace ShaprCVTest {
       Image<Bgr, byte> output_image = new Image<Bgr, byte>( input_image.Size );
       output_image = input_image.ToImage<Bgr, byte>();
       CvInvoke.Resize( output_image, output_image, size );
-      GetContours( filtered_image );
+      DrawContours( output_image, GetContours( filtered_image ) );
 
       CvInvoke.Imshow( windowName, output_image );
       //CvInvoke.Imshow(windowName, contours_image);
@@ -77,6 +77,19 @@ namespace ShaprCVTest {
 
 
       return contours;
+    }
+
+    private static void DrawContours( Image<Bgr, byte> output, VectorOfVectorOfPoint contours ) {
+      Bgr bgrRed = new Bgr( Color.Red );
+
+      for ( int i = 0; i < contours.Size; i++ ) {
+        Rectangle box = CvInvoke.BoundingRectangle( contours[i] );
+        /*if ( ( box.Width < 400 && box.Height < 400 ) &&
+          ( box.Width > 20 && box.Height > 20 ) ) {
+          output.Draw( box, bgrRed, 2 );
+        }*/
+        output.Draw( box, bgrRed, 2 );
+      }
     }
 
     private static void Preprocess( Mat input, Image<Hsv, byte> output, Size size ) {
