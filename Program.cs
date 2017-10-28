@@ -5,15 +5,18 @@ using Emgu.CV.Structure;
 using Emgu.CV.Util;
 using System.Drawing;
 
-namespace ShaprCVTest {
-
-  class MainClass {
-
-    public static void Main() {
-      DetectCups();
+namespace ShaprCVTest
+{
+  class MainClass
+  {
+    public static void Main()
+    {
+      //DetectCups ();
+      SimpleVideoFeed ();
     }
 
-    public static void DetectCups() {
+    public static void DetectCups()
+    {
       string windowName = "Cup Detector";
       Size size = new Size( 500, 500 );
 
@@ -41,7 +44,85 @@ namespace ShaprCVTest {
       //Destroy the window if key is pressed
       CvInvoke.WaitKey( 0 );
       CvInvoke.DestroyWindow( windowName );
+    }
 
+    private static void SimpleVideoFeed () 
+    {
+      
+	    // Initialize video capture from camera and check if it worked. If not, use a video file.
+      Capture vidCap = new Capture ( 0 );
+
+      if ( vidCap.Grab())
+      {
+        Console.WriteLine( "SimpleVideoFeed(): Successfully opened a camera." );
+
+		    // Some webcams return a strange image the first time.
+		    // So we just read one frame and ignore it.
+        vidCap.Retrieve( new Mat() );
+	    }
+      else
+      {
+		    Console.WriteLine( "SimpleVideoFeed(): Could not open camera!" );
+        return;
+	    }
+
+	    // Just for fun, output the video frame size.
+	    Console.WriteLine( "SimpleVideoFeed(): Video frame size is [ " + vidCap.Width + " x " + vidCap.Height + "] pixels." );
+
+	    // Create a window and give it a name.
+	    string wiName = "This is a Video";
+	    CvInvoke.NamedWindow( wiName );
+
+	    // This matrix will contain our image.
+	    Mat frame = new Mat();
+
+	    //The Main Loop: Instead of while(true)
+	    for ( int TimeOut = 0; TimeOut < 10000; TimeOut++ )
+      {
+		    // Read a video frame into our image.
+		    // If we get an empty frame, we abort because have reached the end of the video stream.
+        vidCap.Retrieve( frame );
+		    if ( frame.IsEmpty ) break;
+
+		    // Make sure the image is a 3-channel 24-bit image.
+		    if ( !( frame.Depth == DepthType.Cv8U ) && frame.NumberOfChannels == 3 )
+        {
+			    Console.WriteLine( "SimpleVideoFeed(): Unexpected image format!" );
+			    Console.WriteLine( "SimpleVideoFeed(): Type [" + frame.GetType().ToString() + "] and Channels [" + frame.NumberOfChannels + "]" );
+			    return;
+		    }
+
+		    // Apply a 5x5 median filter.
+		    //CvInvoke.MedianBlur( frame, frame, 5 );
+
+		    // Display a text.
+		    //CvInvoke.PutText( frame, "Click somewhere!", new System.Drawing.Point( 50, 50 ), FontFace.HersheyPlain, 1.5, new MCvScalar( 255, 0, 255 ), 2 );
+
+		    // Show the image in the window.
+		    CvInvoke.Imshow( wiName, frame );
+
+    		// Quit the loop when the Esc key is pressed.
+    		// Calling waitKey is important, even if you're not interested in keyboard input!
+    		int keyPressed = CvInvoke.WaitKey( 1 );
+
+    		if ( keyPressed != -1 && keyPressed != 255 )
+        {
+    			// Only the least-significant 16 bits contain the actual key code. The other bits contain modifier key states.
+    			keyPressed &= 0xFFFF;
+    			Console.WriteLine( "Program.cs: Key pressed: " + keyPressed );
+    			if ( keyPressed == 27 ) break;
+    		}
+	    }
+
+
+    	 /*
+    	  //THIS WAS DONE BEFORE LOOP
+    	  // Set the mouse interaction callback function for the window.
+    	  // The image matrix will be passed as a parameter.
+    	  cv::setMouseCallback(windowName, &mouseEvent, &frame);
+    	 */
+
+	      Console.WriteLine( "SimpleVideoFeed(): Ended Video Function." );
     }
 
     private static VectorOfVectorOfPoint GetContours( Image<Gray, byte> input ) {
