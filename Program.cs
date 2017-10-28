@@ -9,6 +9,9 @@ namespace ShaprCVTest
 {
   class MainClass
   {
+    //Set to TRUE to display debugging messages on console
+    static bool DebugMode = true;
+
     public static void Main()
     {
       //DetectCups ();
@@ -46,6 +49,16 @@ namespace ShaprCVTest
       CvInvoke.DestroyWindow( windowName );
     }
 
+    private static void CheckMouseClicks() 
+    {
+        System.Windows.Forms.MouseButtons Click = System.Windows.Forms.Control.MouseButtons;
+
+        if ( Click != System.Windows.Forms.MouseButtons.None )
+        {
+          if (DebugMode) Console.WriteLine( "CheckMouseClicks(): Button Pressed = " + Click );
+        }
+    }
+
     private static void SimpleVideoFeed () 
     {
       
@@ -54,7 +67,7 @@ namespace ShaprCVTest
 
       if ( vidCap.Grab())
       {
-        Console.WriteLine( "SimpleVideoFeed(): Successfully opened a camera." );
+        if (DebugMode) Console.WriteLine( "SimpleVideoFeed(): Successfully opened a camera." );
 
 		    // Some webcams return a strange image the first time.
 		    // So we just read one frame and ignore it.
@@ -62,12 +75,12 @@ namespace ShaprCVTest
 	    }
       else
       {
-		    Console.WriteLine( "SimpleVideoFeed(): Could not open camera!" );
+		    if (DebugMode) Console.WriteLine( "SimpleVideoFeed(): Could not open camera!" );
         return;
 	    }
 
 	    // Just for fun, output the video frame size.
-	    Console.WriteLine( "SimpleVideoFeed(): Video frame size is [ " + vidCap.Width + " x " + vidCap.Height + "] pixels." );
+	    if (DebugMode) Console.WriteLine( "SimpleVideoFeed(): Video frame size is [ " + vidCap.Width + " x " + vidCap.Height + "] pixels." );
 
 	    // Create a window and give it a name.
 	    string wiName = "This is a Video";
@@ -87,8 +100,8 @@ namespace ShaprCVTest
 		    // Make sure the image is a 3-channel 24-bit image.
 		    if ( !( frame.Depth == DepthType.Cv8U ) && frame.NumberOfChannels == 3 )
         {
-			    Console.WriteLine( "SimpleVideoFeed(): Unexpected image format!" );
-			    Console.WriteLine( "SimpleVideoFeed(): Type [" + frame.GetType().ToString() + "] and Channels [" + frame.NumberOfChannels + "]" );
+			    if (DebugMode) Console.WriteLine( "SimpleVideoFeed(): Unexpected image format!" );
+			    if (DebugMode) Console.WriteLine( "SimpleVideoFeed(): Type [" + frame.GetType().ToString() + "] and Channels [" + frame.NumberOfChannels + "]" );
 			    return;
 		    }
 
@@ -105,24 +118,18 @@ namespace ShaprCVTest
     		// Calling waitKey is important, even if you're not interested in keyboard input!
     		int keyPressed = CvInvoke.WaitKey( 1 );
 
+        CheckMouseClicks ();
+
     		if ( keyPressed != -1 && keyPressed != 255 )
         {
     			// Only the least-significant 16 bits contain the actual key code. The other bits contain modifier key states.
     			keyPressed &= 0xFFFF;
-    			Console.WriteLine( "Program.cs: Key pressed: " + keyPressed );
+    			if (DebugMode) Console.WriteLine( "SimpleVideoFeed(): Key pressed: " + keyPressed );
     			if ( keyPressed == 27 ) break;
     		}
 	    }
 
-
-    	 /*
-    	  //THIS WAS DONE BEFORE LOOP
-    	  // Set the mouse interaction callback function for the window.
-    	  // The image matrix will be passed as a parameter.
-    	  cv::setMouseCallback(windowName, &mouseEvent, &frame);
-    	 */
-
-	      Console.WriteLine( "SimpleVideoFeed(): Ended Video Function." );
+      if (DebugMode) Console.WriteLine( "SimpleVideoFeed(): Ended Video Function." );
     }
 
     private static VectorOfVectorOfPoint GetContours( Image<Gray, byte> input ) {
