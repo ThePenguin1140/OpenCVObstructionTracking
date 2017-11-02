@@ -21,7 +21,7 @@ namespace ShaprCVTest
     public static void DetectCups()
     {
       string windowName = "Cup Detector";
-      Size size = new Size( 500, 500 );
+      Size size = new Size( 700, 700 );
 
       //Load image
       Mat input_image = CvInvoke.Imread( "..\\..\\Images\\Cups.jpg", LoadImageType.AnyColor );
@@ -128,37 +128,23 @@ namespace ShaprCVTest
     }
 
     private static VectorOfVectorOfPoint GetContours( Image<Gray, byte> input ) {
+
+      VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint();
+
       Image<Gray, float> laplace_image = input.Laplace( 3 );
       Image<Gray, float> erode_image = laplace_image.Erode( 2 );
       Image<Gray, byte> byteErode_image = erode_image.Convert<Gray, byte>();
       Image<Gray, byte> thresholded_image = byteErode_image.ThresholdToZero( new Gray( 240 ) );
       Image<Gray, byte> erode2_image = thresholded_image.Erode( 3 );
 
-      VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint();
-
       int[,] tree = CvInvoke.FindContourTree( erode2_image, contours, ChainApproxMethod.ChainApproxSimple );
 
-      for ( int n = 0; n < tree.Length/4; n++ ) {
+      for ( int n = 0; n < tree.Length / 4; n++ ) {
         for ( int m = 0; m < 4; m++ ) {
           Console.Write( tree[n, m] + ", " );
         }
         Console.WriteLine();
       }
-
-      //Crop the image
-      Rectangle frame = CvInvoke.BoundingRectangle( contours[0] );
-      Rectangle roi = new Rectangle(
-                                    new Point(
-                                      frame.X,
-                                      frame.Y
-                                             ),
-                                    new Size(
-                                      frame.Width - 200,
-                                      frame.Height - 250
-                                     )
-                                   );
-
-
       return contours;
     }
 
@@ -202,7 +188,6 @@ namespace ShaprCVTest
       CvInvoke.InRange( hsv_image, lower, upper, output );
 
       //CvInvoke.AdaptiveThreshold( gray_image, output, 255, AdaptiveThresholdType.GaussianC, ThresholdType.Binary, 15, 4 );
-
     }
   }
 }
