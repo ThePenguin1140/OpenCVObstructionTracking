@@ -14,8 +14,8 @@ namespace ShaprCVTest
 
     public static void Main()
     {
-      //DetectCups ();
-      SimpleVideoFeed ();
+      DetectCups ();
+      //SimpleVideoFeed ();
     }
 
     public static void DetectCups()
