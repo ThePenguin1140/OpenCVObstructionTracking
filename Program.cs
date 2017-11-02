@@ -25,22 +25,17 @@ namespace ShaprCVTest
 
       //Load image
       Mat input_image = CvInvoke.Imread( "..\\..\\Images\\Cups.jpg", LoadImageType.AnyColor );
-      Image<Hsv, byte> preprocessed_image = new Image<Hsv, byte>( size );
+      Image<Gray, byte> preprocessed_image = new Image<Gray, byte>( size );
+
+      //denoise, smoothe and threshold
       Preprocess( input_image, preprocessed_image, size );
-      //blur the image to reduce noise and smoothe edges
-      CvInvoke.GaussianBlur( preprocessed_image, preprocessed_image, new Size( 31, 31 ), 0, 0 );
-
-
-      ScalarArray lower = new ScalarArray( new Hsv( 0, 0, 0 ).MCvScalar );
-      ScalarArray upper = new ScalarArray( new Hsv( 90, 255, 255 ).MCvScalar );
-      Image<Gray, byte> filtered_image = new Image<Gray, byte>( size );
-      CvInvoke.InRange( preprocessed_image, lower, upper, filtered_image );
 
       Image<Bgr, byte> output_image = new Image<Bgr, byte>( input_image.Size );
       output_image = input_image.ToImage<Bgr, byte>();
       CvInvoke.Resize( output_image, output_image, size );
-      DrawContours( output_image, GetContours( filtered_image ) );
+      DrawContours( output_image, GetContours( preprocessed_image ) );
 
+      CvInvoke.Imshow( "threshold", preprocessed_image );
       CvInvoke.Imshow( windowName, output_image );
       //CvInvoke.Imshow(windowName, contours_image);
       //Wait for the key pressing event
@@ -172,20 +167,41 @@ namespace ShaprCVTest
 
       for ( int i = 0; i < contours.Size; i++ ) {
         Rectangle box = CvInvoke.BoundingRectangle( contours[i] );
-        /*if ( ( box.Width < 400 && box.Height < 400 ) &&
-          ( box.Width > 20 && box.Height > 20 ) ) {
+        if ( ( box.Width < 400 && box.Height < 400 ) &&
+          ( box.Width > 50 && box.Height > 50 ) ) {
           output.Draw( box, bgrRed, 2 );
-        }*/
-        output.Draw( box, bgrRed, 2 );
+        }
+        //output.Draw( box, bgrRed, 2 );
       }
     }
 
-    private static void Preprocess( Mat input, Image<Hsv, byte> output, Size size ) {
+    private static void Preprocess( Mat input, Image<Gray, byte> output, Size size ) {
 
       //Resize image
       Image<Bgr, byte> resized_image = new Image<Bgr, byte>( size );
       CvInvoke.Resize( input, resized_image, size );
-      CvInvoke.CvtColor( resized_image, output, ColorConversion.Bgr2Hsv );
+
+      CvInvoke.FastNlMeansDenoisingColored( resized_image, resized_image, 3, 3, 7, 21 );
+      resized_image = resized_image.SmoothMedian( 15 );
+      resized_image._GammaCorrect( 2d );
+      resized_image._EqualizeHist();
+
+      Image<Hsv, byte> hsv_image = new Image<Hsv, byte>( size );
+      CvInvoke.CvtColor( resized_image, hsv_image, ColorConversion.Bgr2Hsv );
+
+      CvInvoke.Imshow( "hsv", hsv_image );
+
+      Image<Gray, byte> gray_image = new Image<Gray, byte>( size );
+      CvInvoke.CvtColor( resized_image, gray_image, ColorConversion.Bgr2Gray );
+
+      CvInvoke.Imshow( "gray", gray_image );
+
+      ScalarArray lower = new ScalarArray( new Hsv( 0, 0, 0 ).MCvScalar );
+      ScalarArray upper = new ScalarArray( new Hsv( 35, 255, 255 ).MCvScalar );
+
+      CvInvoke.InRange( hsv_image, lower, upper, output );
+
+      //CvInvoke.AdaptiveThreshold( gray_image, output, 255, AdaptiveThresholdType.GaussianC, ThresholdType.Binary, 15, 4 );
 
     }
   }
