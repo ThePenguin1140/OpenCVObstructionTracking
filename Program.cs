@@ -153,8 +153,10 @@ namespace ShaprCVTest
 
       for ( int i = 0; i < contours.Size; i++ ) {
         Rectangle box = CvInvoke.BoundingRectangle( contours[i] );
-        if ( ( box.Width < 400 && box.Height < 400 ) &&
-          ( box.Width > 50 && box.Height > 50 ) ) {
+        if (  ( box.Width < 400 && box.Height < 400 ) &&
+              ( box.Width > 50 && box.Height > 50 ) && 
+            ( box.Height > box.Width ) 
+           ) {
           output.Draw( box, bgrRed, 2 );
         }
         //output.Draw( box, bgrRed, 2 );
