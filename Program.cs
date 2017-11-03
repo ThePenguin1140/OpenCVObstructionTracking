@@ -14,17 +14,17 @@ namespace ShaprCVTest
 
     public static void Main()
     {
-      DetectCups ();
+      Mat frame = CvInvoke.Imread( "..\\..\\Images\\Cups.jpg", LoadImageType.AnyColor );
+      DetectCups ( frame );
       //SimpleVideoFeed ();
     }
 
-    public static void DetectCups()
+    public static Image<Bgr, byte> DetectCups(Mat input_image)
     {
-      string windowName = "Cup Detector";
+
       Size size = new Size( 700, 700 );
 
       //Load image
-      Mat input_image = CvInvoke.Imread( "..\\..\\Images\\Cups.jpg", LoadImageType.AnyColor );
       Image<Gray, byte> preprocessed_image = new Image<Gray, byte>( size );
 
       //denoise, smoothe and threshold
@@ -35,13 +35,7 @@ namespace ShaprCVTest
       CvInvoke.Resize( output_image, output_image, size );
       DrawContours( output_image, GetContours( preprocessed_image ) );
 
-      CvInvoke.Imshow( "threshold", preprocessed_image );
-      CvInvoke.Imshow( windowName, output_image );
-      //CvInvoke.Imshow(windowName, contours_image);
-      //Wait for the key pressing event
-      //Destroy the window if key is pressed
-      CvInvoke.WaitKey( 0 );
-      CvInvoke.DestroyWindow( windowName );
+      return output_image;
     }
 
     private static void CheckMouseClicks() 
