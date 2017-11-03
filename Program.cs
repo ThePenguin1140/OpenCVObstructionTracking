@@ -153,7 +153,6 @@ namespace ShaprCVTest
            ) {
           output.Draw( box, bgrRed, 2 );
         }
-        //output.Draw( box, bgrRed, 2 );
       }
     }
 
