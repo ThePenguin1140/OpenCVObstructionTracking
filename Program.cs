@@ -15,7 +15,10 @@ namespace ShaprCVTest
     public static void Main()
     {
       Mat frame = CvInvoke.Imread( "..\\..\\Images\\Cups.jpg", LoadImageType.AnyColor );
-      DetectCups ( frame );
+      CvInvoke.Imshow( "DetectCups", DetectCups( frame ) );
+
+      CvInvoke.WaitKey( 0 );
+      CvInvoke.DestroyAllWindows();
       //SimpleVideoFeed ();
     }
 
