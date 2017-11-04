@@ -12,6 +12,7 @@ namespace ShaprCVTest
     //Set to TRUE to display debugging messages on console
     static bool DebugMode = true;
 
+    /*
     public static void Main()
     {
       Mat frame = CvInvoke.Imread( "..\\..\\Images\\Cups.jpg", LoadImageType.AnyColor );
@@ -21,6 +22,8 @@ namespace ShaprCVTest
       CvInvoke.DestroyAllWindows();
       //SimpleVideoFeed ();
     }
+    */
+
 
     public static Image<Bgr, byte> DetectCups(Mat input_image)
     {
