@@ -114,6 +114,7 @@ namespace ShaprCVTest
     private static VectorOfVectorOfPoint GetContours( Image<Gray, byte> input )
     {
     	VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint();
+      VectorOfVectorOfPoint contour2 = new VectorOfVectorOfPoint();
 
     	Image<Gray, float> laplace_image      = input.Laplace( 3 );
     	Image<Gray, float> erode_image        = laplace_image.Erode( 2 );
@@ -122,20 +123,41 @@ namespace ShaprCVTest
     	Image<Gray, byte > erode2_image       = thresholded_image.Erode( 3 );
 
     	int[,] tree = CvInvoke.FindContourTree( erode2_image, contours, ChainApproxMethod.ChainApproxSimple );
+      int[,] tre2 = new int[tree.Length / 4, 4];
+
+      int t2id = 0;
+
+      //Filter Countors: remove oddly sized ones
+      for ( int i = 0; i<contours.Size; i++ )
+      {
+        Rectangle box = CvInvoke.BoundingRectangle( contours[i] );
+
+        if ( ( box.Width  < 400       && box.Height     < 400 ) &&
+             ( box.Width  > 50        && box.Height     > 50  ) &&
+             ( box.Height > box.Width && box.Location.Y > 100 ) ) 
+             {
+                tre2[t2id, 0] = tree[i, 0];
+                tre2[t2id, 1] = tree[i, 1];
+                tre2[t2id, 2] = tree[i, 2];
+                tre2[t2id, 3] = tree[i, 3];
+                contour2.Push(contours[i]);
+                t2id++;
+             }
+      }
 
       Console.WriteLine("\nCV_Program: GetControus():\n");
 
-    	for ( int n = 0; n < tree.Length / 4; n++ )
+    	for ( int n = 0; n < t2id; n++ )
       {
     		for ( int m = 0; m < 4; m++ )
         {
-          Console.Write( tree[n, m].ToString().PadLeft(5));
+          Console.Write( tre2[n, m].ToString().PadLeft(5));
     		}
 
     		Console.WriteLine();
     	}
 
-    	return contours;
+    	return contour2;
     }
 
     private static void DrawContours( Image<Bgr, byte> output, VectorOfVectorOfPoint contours, Mat frame = null )
@@ -148,19 +170,14 @@ namespace ShaprCVTest
       {
     		Rectangle box = CvInvoke.BoundingRectangle( contours[i] );
 
-    		if ( ( box.Width  < 400       && box.Height     < 400 ) &&
-    			   ( box.Width  > 50        && box.Height     > 50  ) &&
-             ( box.Height > box.Width && box.Location.Y > 100 ) ) 
-             {
-                output.Draw( box, bgrRed, 2 );
+        output.Draw( box, bgrRed, 2 );
 
-                boxID++;
-
-                if ( frame != null )
-                CvInvoke.PutText( frame, "[" + boxID + "]", new System.Drawing.Point( box.Location.X + 5, box.Location.Y - 10 ), FontFace.HersheyPlain, 1.25, new MCvScalar( 255, 0, 255 ), 2 );
-    		     }
+        if ( frame != null )
+                CvInvoke.PutText( frame, "[" + i+1 + "]", new System.Drawing.Point( box.Location.X + 5, box.Location.Y - 10 ), FontFace.HersheyPlain, 1.25, new MCvScalar( 255, 0, 255 ), 2 );
+             
     	}
     }
+
 
     private static void Preprocess( Mat input, Image<Gray, byte> output, Size size )
     {
