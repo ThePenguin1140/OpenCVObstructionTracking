@@ -111,6 +111,24 @@ namespace ShaprCVTest
     	return output_image;
     }
 
+    private static bool HasParent( VectorOfVectorOfPoint currentContours, Rectangle checkMe )
+    {
+      for ( int n = 0; n < currentContours.Size; n++ )
+      {
+        Rectangle Box = CvInvoke.BoundingRectangle( currentContours[n] );
+
+        if ( Box.Location.X               < checkMe.Location.X                  &&
+             Box.Location.Y               < checkMe.Location.Y                  &&
+             Box.Location.X + Box.Width   > checkMe.Location.X + checkMe.Width  &&
+             Box.Location.Y + Box.Height  > checkMe.Location.Y + checkMe.Width  )
+          
+          return true;
+
+      }
+
+      return false;
+    }
+
     private static VectorOfVectorOfPoint GetContours( Image<Gray, byte> input )
     {
     	VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint();
@@ -134,7 +152,7 @@ namespace ShaprCVTest
 
         if ( ( box.Width  < 400       && box.Height     < 400 ) &&
              ( box.Width  > 50        && box.Height     > 50  ) &&
-             ( box.Height > box.Width && box.Location.Y > 100 ) ) 
+             ( box.Height > box.Width && box.Location.Y > 100 ) && !HasParent(contour2, CvInvoke.BoundingRectangle( contours[i] ))) 
              {
                 tre2[t2id, 0] = tree[i, 0];
                 tre2[t2id, 1] = tree[i, 1];
@@ -173,7 +191,7 @@ namespace ShaprCVTest
         output.Draw( box, bgrRed, 2 );
 
         if ( frame != null )
-                CvInvoke.PutText( frame, "[" + i+1 + "]", new System.Drawing.Point( box.Location.X + 5, box.Location.Y - 10 ), FontFace.HersheyPlain, 1.25, new MCvScalar( 255, 0, 255 ), 2 );
+            CvInvoke.PutText( frame, "[" + (i+1) + "]", new System.Drawing.Point( box.Location.X + 5, box.Location.Y - 10 ), FontFace.HersheyPlain, 1.25, new MCvScalar( 255, 0, 255 ), 2 );
              
     	}
     }
