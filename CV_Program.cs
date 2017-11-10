@@ -15,13 +15,94 @@ namespace ShaprCVTest
     public static bool ShowGray = false;
 
     private static void ExtractFeatures( Mat modelImg, Mat obsImg, out VectorOfKeyPoint modelKey, out VectorOfKeyPoint observedKey, VectorOfVectorOfDMatch matches, out Mat mask, out Mat homography ) {
+      int k = 2;
+      double uniqueThresh = 0.5;
+      double hessianThres = 300;
+
+      homography = null;
+      mask = null;
+
+      modelKey = new VectorOfKeyPoint();
+      observedKey = new VectorOfKeyPoint();
+
+      using ( UMat uModel = modelImg.ToUMat( AccessType.Read ) )
+      using ( UMat uObs = obsImg.ToUMat( AccessType.Read ) ) {
+        SURF surfCPU = new SURF( hessianThres );
+
+        UMat modelDescriptors = new UMat();
+        surfCPU.DetectAndCompute( uModel, null, modelKey, modelDescriptors, false );
+
+        UMat obsDescriptors = new UMat();
+        surfCPU.DetectAndCompute( uObs, null, observedKey, obsDescriptors, false );
+
+        BFMatcher matcher = new BFMatcher( DistanceType.L2 );
+        matcher.Add( modelDescriptors );
+
+        matcher.KnnMatch( obsDescriptors, matches, k, null );
+        mask = new Mat( matches.Size, 1, DepthType.Cv8U, 1 );
+        mask.SetTo( new MCvScalar( 255 ) );
+        Features2DToolbox.VoteForUniqueness( matches, uniqueThresh, mask );
+
+        int nonZeroCount = CvInvoke.CountNonZero( mask );
+        if ( nonZeroCount >= 4 ) {
+          nonZeroCount = Features2DToolbox.VoteForSizeAndOrientation( modelKey, observedKey, matches, mask, 1.5, 20 );
+          if ( nonZeroCount >= 4 ) {
+            homography = Features2DToolbox.GetHomographyMatrixFromMatchedFeatures( modelKey, observedKey, matches, mask, 2 );
+          }
+        }
+      }
     }
+
     public static void SURFDetectCups( string inputImagePath = "..//..//Images//Cups.jpg" ) {
+
+      Size size = new Size( 700, 700 );
+
+      Mat leftCorner = SURFPreprocessing( CvInvoke.Imread( "..\\..\\Images\\cups_bottom_left.jpg", LoadImageType.AnyColor ), size );
+      Mat rightCorner = SURFPreprocessing( CvInvoke.Imread( "..\\..\\Images\\cups_bottom_right.jpg", LoadImageType.AnyColor ), size );
+      Mat test = SURFPreprocessing( CvInvoke.Imread( "..\\..\\Images\\cups_bottom.jpg", LoadImageType.AnyColor ), size );
+
+      Mat inputImage = CvInvoke.Imread( inputImagePath, LoadImageType.AnyColor );
+
+      Mat preprocessedImg = SURFPreprocessing( inputImage, size );
+
+      CvInvoke.Imshow( "Draw SURF", DrawSURF( test, leftCorner ) );
+
+      CvInvoke.WaitKey( 0 );
+      CvInvoke.DestroyAllWindows();
     }
+
     private static Mat DrawSURF( Mat modelImage, Mat observedImage ) {
+      Mat homography;
+      VectorOfKeyPoint modelKeyPoints, observedKeyPoints;
+
+      using ( VectorOfVectorOfDMatch matches = new VectorOfVectorOfDMatch() ) {
+        Mat mask;
+        ExtractFeatures( modelImage, observedImage, out modelKeyPoints, out observedKeyPoints, matches, out mask, out homography );
+
         Mat result = new Mat();
+        Features2DToolbox.DrawMatches( modelImage, modelKeyPoints, observedImage, observedKeyPoints, matches, result, new MCvScalar( 255, 255, 255 ), new MCvScalar( 255, 255, 255 ), mask );
+
+        if ( homography != null ) {
+          Rectangle rect = new Rectangle( Point.Empty, modelImage.Size );
+          PointF[] pts = new PointF[]
+          {
+            new PointF( rect.Left,   rect.Bottom),
+            new PointF( rect.Right,  rect.Bottom),
+            new PointF( rect.Left,   rect.Top),
+            new PointF( rect.Right,  rect.Top)
+          };
+          pts = CvInvoke.PerspectiveTransform( pts, homography );
+
+          Point[] points = Array.ConvertAll<PointF, Point>( pts, Point.Round );
+          using ( VectorOfPoint vp = new VectorOfPoint( points ) ) {
+            CvInvoke.Polylines( result, vp, true, new MCvScalar( 255, 0, 0, 255 ), 5 );
+          }
+        }
+
         return result;
+      }
     }
+
     public static void DetectCups_Image( string ImgPath = "..\\..\\Images\\Cups.jpg", bool ShowHSV = false, bool ShowGray = false) 
     {
       Console.WriteLine( "CV_Program: DetectCups_Image(): [" + ShowHSV + ", " + ShowGray + "] " + ImgPath + "" );
