@@ -178,6 +178,25 @@ namespace ShaprCVTest
     	}
     }
 
+    private static Mat SURFPreprocessing( Mat input, Size size ) {
+      //Resize image
+      Image<Bgr, byte> resized_image = new Image<Bgr, byte>( size );
+      CvInvoke.Resize( input, resized_image, size );
+
+      //Causes a lot of lag between frames
+      //CvInvoke.FastNlMeansDenoisingColored( resized_image, resized_image, 3, 3, 7, 21 );
+
+      //Causes a bit of lag between frames
+      resized_image = resized_image.SmoothGaussian( 15 );
+      resized_image._GammaCorrect( 2d );
+      resized_image._EqualizeHist();
+
+      Mat output = new Mat();
+      CvInvoke.CvtColor( resized_image, output, ColorConversion.Bgr2Hsv );
+
+      return output;
+    }
+
 
     private static void Preprocess( Mat input, Image<Gray, byte> output, Size size )
     {
