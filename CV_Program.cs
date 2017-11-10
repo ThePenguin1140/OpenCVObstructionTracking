@@ -3,6 +3,8 @@ using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
 using Emgu.CV.Util;
+using Emgu.CV.Features2D;
+using Emgu.CV.XFeatures2D;
 using System.Drawing;
 
 namespace ShaprCVTest 
@@ -12,6 +14,14 @@ namespace ShaprCVTest
     public static bool ShowHSV  = false;
     public static bool ShowGray = false;
 
+    private static void ExtractFeatures( Mat modelImg, Mat obsImg, out VectorOfKeyPoint modelKey, out VectorOfKeyPoint observedKey, VectorOfVectorOfDMatch matches, out Mat mask, out Mat homography ) {
+    }
+    public static void SURFDetectCups( string inputImagePath = "..//..//Images//Cups.jpg" ) {
+    }
+    private static Mat DrawSURF( Mat modelImage, Mat observedImage ) {
+        Mat result = new Mat();
+        return result;
+    }
     public static void DetectCups_Image( string ImgPath = "..\\..\\Images\\Cups.jpg", bool ShowHSV = false, bool ShowGray = false) 
     {
       Console.WriteLine( "CV_Program: DetectCups_Image(): [" + ShowHSV + ", " + ShowGray + "] " + ImgPath + "" );
@@ -230,6 +240,5 @@ namespace ShaprCVTest
 
     	CvInvoke.InRange( hsv_image, lower, upper, output );
     }
-
   }
 }
