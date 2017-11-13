@@ -101,16 +101,16 @@ namespace ShaprCVTest
     	Size size = new Size( 700, 700 );
 
     	//Load image
-      Image<Gray, byte> preprocessed_image = new Image<Gray, byte>( size );
+      Image<Gray, byte> filtered_image = new Image<Gray, byte>( size );
 
       //denoise, smoothe and threshold
-      PreProcessing.Preprocess( input_image, preprocessed_image, size );
+      filtered_image = FilterCups( Preprocess( input_image, size ) );
 
     	Image<Bgr, byte> output_image = new Image<Bgr, byte>( input_image.Size );
     	output_image = input_image.ToImage<Bgr, byte>();
     	CvInvoke.Resize( output_image, output_image, size );
 
-      PreProcessing.DrawContours( output_image, PreProcessing.GetContours( preprocessed_image ), output_image.Mat );
+      DrawContours( output_image, GetContours( filtered_image ), output_image.Mat );
 
     	return output_image;
     }
@@ -170,11 +170,11 @@ namespace ShaprCVTest
     }
 
 
-    private static void Preprocess( Mat input, Image<Gray, byte> output, Size size )
+    private static Image<Hsv, byte> Preprocess( Mat input, Size size )
     {
 
     	//Resize image
-    	Image<Bgr, byte> resized_image = new Image<Bgr, byte>( size );
+      Image<Bgr, byte> resized_image = new Image<Bgr, byte>( size );
     	CvInvoke.Resize( input, resized_image, size );
 
       //Causes a lot of lag between frames
@@ -191,16 +191,27 @@ namespace ShaprCVTest
     	Image<Hsv, byte> hsv_image = new Image<Hsv, byte>( size );
     	CvInvoke.CvtColor( resized_image, hsv_image, ColorConversion.Bgr2Hsv );
 
+      Image<Hsv,byte> output = new Image<Hsv, byte>( size );
+    	CvInvoke.CvtColor( resized_image, output, ColorConversion.Bgr2Hsv );
+
       if ( ShowHSV )
-    	CvInvoke.Imshow( "hsv", hsv_image );
+    	CvInvoke.Imshow( "hsv", output );
 
-    	ScalarArray lower = new ScalarArray( new Hsv( 0 , 0  , 0   ).MCvScalar );
-    	ScalarArray upper = new ScalarArray( new Hsv( 35, 255, 255 ).MCvScalar );
+      return output;
+    }
 
-    	CvInvoke.InRange( hsv_image, lower, upper, output );
+    private static Image<Gray, byte> FilterCups( Image<Hsv, byte> input ) {
+      ScalarArray lower = new ScalarArray( new Hsv( 0, 0, 0 ).MCvScalar );
+      ScalarArray upper = new ScalarArray( new Hsv( 35, 255, 255 ).MCvScalar );
+
+      Image<Gray, byte> output = new Image<Gray, byte>( input.Size );
+
+      CvInvoke.InRange( input, lower, upper, output );
 
       if ( ShowFiltered )
         CvInvoke.Imshow( "filter", output );
+
+      return output;
     }
 
   }
