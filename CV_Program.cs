@@ -9,17 +9,17 @@ namespace ShaprCVTest
 {
   class CV_Program 
   {
-    public static bool      ShowHSV   = false;
-    public static bool      ShowGray  = false;
     public static bool      TrackCups = false;
     public static CV_Cup[]  Cups             ;
+    public static bool ShowHSV  = false;
+    public static bool ShowFiltered = false;
 
     public static void DetectCups_Image( string ImgPath = "..\\..\\Images\\Cups.jpg", bool ShowHSV = false, bool ShowGray = false) 
     {
       Console.WriteLine( "CV_Program: DetectCups_Image(): [" + ShowHSV + ", " + ShowGray + "] " + ImgPath + "" );
 
       CV_Program.ShowHSV  = ShowHSV ;
-      CV_Program.ShowGray = ShowGray;
+      CV_Program.ShowFiltered = ShowGray;
 
       Mat frame = CvInvoke.Imread( ImgPath, LoadImageType.AnyColor );
 
@@ -36,7 +36,7 @@ namespace ShaprCVTest
       Console.WriteLine( "CV_Program: DetectCups_Video(): [" + ShowHSV + ", " + ShowGray + "] " + VidPath + "" );
 
       CV_Program.ShowHSV  = ShowHSV ;
-      CV_Program.ShowGray = ShowGray;
+      CV_Program.ShowFiltered = ShowGray;
 
       // Initialize video capture from the video file and check if it worked.
       Capture vidCap = new Capture( VidPath );
@@ -194,18 +194,12 @@ namespace ShaprCVTest
       if ( ShowHSV )
     	CvInvoke.Imshow( "hsv", hsv_image );
 
-    	Image<Gray, byte> gray_image = new Image<Gray, byte>( size );
-    	CvInvoke.CvtColor( resized_image, gray_image, ColorConversion.Bgr2Gray );
-
-      if ( ShowGray )
-    	CvInvoke.Imshow( "gray", gray_image );
-
     	ScalarArray lower = new ScalarArray( new Hsv( 0 , 0  , 0   ).MCvScalar );
     	ScalarArray upper = new ScalarArray( new Hsv( 35, 255, 255 ).MCvScalar );
 
     	CvInvoke.InRange( hsv_image, lower, upper, output );
 
-      if ( ShowGray )
+      if ( ShowFiltered )
         CvInvoke.Imshow( "filter", output );
     }
 
