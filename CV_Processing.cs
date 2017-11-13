@@ -86,7 +86,7 @@ namespace ShaprCVTest
 		    output.Draw( box, bgrRed, 2 );
 
         if ( frame != null && CV_Program.TrackCups)
-			    CvInvoke.PutText( frame, "[" + ( i + 1 ) + "]", new System.Drawing.Point( box.Location.X + 5, box.Location.Y - 10 ), FontFace.HersheyPlain, 1.25, new MCvScalar( 255, 0, 255 ), 2 );
+          CvInvoke.PutText( frame, "[" + ( GetCupNum(box) + 1 ) + "]", new System.Drawing.Point( box.Location.X + 5, box.Location.Y - 10 ), FontFace.HersheyPlain, 1.25, new MCvScalar( 255, 0, 255 ), 2 );
       }
     }
 
@@ -120,6 +120,42 @@ namespace ShaprCVTest
     	ScalarArray upper = new ScalarArray( new Hsv( 35, 255, 255 ).MCvScalar );
 
       CvInvoke.InRange( hsv_image, lower, upper, output );
+    }
+
+    public static int GetCupNum( Rectangle Box )
+    {
+      int   n = -1;
+      float d = -1.0f;
+
+      for ( int i = 0; i < 3; i++ )
+      {
+        float newDist = GetDistance( Box, CV_Program.Cups[i].BoundingBox );
+        if ( newDist < d || d == -1.0f)
+        {
+          n = i;
+          d = newDist;
+        }
+      }
+
+      return n;
+    }
+
+    public static float GetDistance( Rectangle rect1, Rectangle rect2 )
+    {
+      Point center1 = Center( rect1 );
+      Point center2 = Center( rect2 );
+
+      float horizontalDistance = ( center2.X - center1.X );
+      float verticalDistance   = ( center2.Y - center1.Y );
+
+      float distance = (float) Math.Sqrt( ( horizontalDistance * horizontalDistance ) + ( verticalDistance * verticalDistance ) );
+
+	    return distance;
+    }
+
+    public static Point Center( Rectangle rect )
+    {
+      return new Point( rect.Left + rect.Width / 2, rect.Top + rect.Height / 2);
     }
 
   }
