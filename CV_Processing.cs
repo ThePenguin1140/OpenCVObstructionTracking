@@ -60,15 +60,16 @@ namespace ShaprCVTest
 		      }
       }
 
-	    Console.WriteLine( "\nCV_Program: GetControus():\n" );
+      //Uncomment the following Console.WriteLines to display Bounding Box details
+	    //Console.WriteLine( "\nCV_Program: GetControus():\n" );
 
 	    for ( int n = 0; n < t2id; n++ )
       {
         for ( int m = 0; m < 4; m++ )
         {
-          Console.Write( tre2[n, m].ToString().PadLeft( 5 ) );
+          //Console.Write( tre2[n, m].ToString().PadLeft( 5 ) );
 		    }
-        Console.WriteLine();
+        //Console.WriteLine();
       }
 
       return contour2;
@@ -78,22 +79,19 @@ namespace ShaprCVTest
     {
       Bgr bgrRed = new Bgr( Color.Red );
 
-      int boxID = 0;
-
 	    for ( int i = 0; i < contours.Size; i++ ) 
       {
         Rectangle box = CvInvoke.BoundingRectangle( contours[i] );
 
 		    output.Draw( box, bgrRed, 2 );
 
-		    if ( frame != null )
+        if ( frame != null && CV_Program.TrackCups)
 			    CvInvoke.PutText( frame, "[" + ( i + 1 ) + "]", new System.Drawing.Point( box.Location.X + 5, box.Location.Y - 10 ), FontFace.HersheyPlain, 1.25, new MCvScalar( 255, 0, 255 ), 2 );
       }
     }
 
     public static void Preprocess( Mat input, Image<Gray, byte> output, Size size ) 
     {
-
       //Resize image
     	Image<Bgr, byte> resized_image = new Image<Bgr, byte>( size );
     	CvInvoke.Resize( input, resized_image, size );
@@ -123,5 +121,6 @@ namespace ShaprCVTest
 
       CvInvoke.InRange( hsv_image, lower, upper, output );
     }
+
   }
 }

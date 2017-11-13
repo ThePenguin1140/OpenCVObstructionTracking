@@ -9,8 +9,10 @@ namespace ShaprCVTest
 {
   class CV_Program 
   {
-    public static bool ShowHSV  = false;
-    public static bool ShowGray = false;
+    public static bool      ShowHSV   = false;
+    public static bool      ShowGray  = false;
+    public static bool      TrackCups = false;
+    public static CV_Cup[]  Cups             ;
 
     public static void DetectCups_Image( string ImgPath = "..\\..\\Images\\Cups.jpg", bool ShowHSV = false, bool ShowGray = false) 
     {
@@ -85,7 +87,8 @@ namespace ShaprCVTest
           // Only the least-significant 16 bits contain the actual key code. The other bits contain modifier key states
           keyPressed &= 0xFFFF;
           Console.WriteLine( "CV_Program: DetectCups_Video(): Key pressed: " + keyPressed );
-          if ( keyPressed == 27 ) break;
+          if ( keyPressed == 27  ) break;
+          if ( keyPressed == 116 ) InitCupTracking(frame);
         }
       }
 
@@ -109,6 +112,43 @@ namespace ShaprCVTest
       PreProcessing.DrawContours( output_image, PreProcessing.GetContours( preprocessed_image ), output_image.Mat );
 
     	return output_image;
+    }
+
+    public static void InitCupTracking( Mat input_image )
+    {
+      if ( !TrackCups )
+      {
+        TrackCups = true;
+
+        Cups = new CV_Cup[3];
+
+        for ( int i = 0; i < 3; i++ )
+        {
+          Cups[i] = new CV_Cup();
+        }
+
+        Size size = new Size( 700, 700 );
+
+        //Load image
+        Image<Gray, byte> preprocessed_image = new Image<Gray, byte>( size );
+
+        //denoise, smoothe and threshold
+        PreProcessing.Preprocess( input_image, preprocessed_image, size );
+
+        VectorOfVectorOfPoint contours = PreProcessing.GetContours( preprocessed_image );
+
+        for ( int i = 0; i < contours.Size; i++ ) 
+        {
+          if ( i < 3 ) Cups[i].Init(i,CvInvoke.BoundingRectangle( contours[i] ));
+          else Console.WriteLine( "CV_Program: Too many contours during InitCupTracking()" );
+        }
+
+        Console.WriteLine( "CV_Program: InitCupTracking(): Found These Cups:" );
+        Console.WriteLine( "CV_Program: InitCupTracking(): [" + Cups[0].CupID + "] " + Cups[0].BoundingBox);
+        Console.WriteLine( "CV_Program: InitCupTracking(): [" + Cups[1].CupID + "] " + Cups[1].BoundingBox);
+        Console.WriteLine( "CV_Program: InitCupTracking(): [" + Cups[2].CupID + "] " + Cups[2].BoundingBox);
+
+      }
     }
 
   }
