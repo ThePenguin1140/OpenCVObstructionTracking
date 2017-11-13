@@ -55,7 +55,14 @@ namespace ShaprCVTest
         			tre2[t2id, 1] = tree[i, 1];
         			tre2[t2id, 2] = tree[i, 2];
         			tre2[t2id, 3] = tree[i, 3];
-        			contour2.Push( contours[i] );
+
+              if ( (float)box.Width / (float)box.Height > 0.55f )
+              {
+                //We could have code here that splits the bounding boxes
+                Console.WriteLine( "CV_Processing: GetContours: Large Bounding Box Detected!" );
+              }
+
+            contour2.Push( contours[i] );
         			t2id++;
 		      }
       }
