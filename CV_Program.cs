@@ -150,5 +150,61 @@ namespace ShaprCVTest
         TrackCups = true;
       }
     }
+
+    private static void DrawContours( Image<Bgr, byte> output, VectorOfVectorOfPoint contours, Mat frame = null )
+    {
+    	Bgr bgrRed = new Bgr( Color.Red );
+
+      int boxID = 0;
+
+    	for ( int i = 0; i < contours.Size; i++ )
+      {
+    		Rectangle box = CvInvoke.BoundingRectangle( contours[i] );
+
+        output.Draw( box, bgrRed, 2 );
+
+        if ( frame != null )
+            CvInvoke.PutText( frame, "[" + (i+1) + "]", new System.Drawing.Point( box.Location.X + 5, box.Location.Y - 10 ), FontFace.HersheyPlain, 1.25, new MCvScalar( 255, 0, 255 ), 2 );
+             
+    	}
+    }
+
+
+    private static void Preprocess( Mat input, Image<Gray, byte> output, Size size )
+    {
+
+    	//Resize image
+    	Image<Bgr, byte> resized_image = new Image<Bgr, byte>( size );
+    	CvInvoke.Resize( input, resized_image, size );
+
+      //Causes a lot of lag between frames
+    	//CvInvoke.FastNlMeansDenoisingColored( resized_image, resized_image, 3, 3, 7, 21 );
+
+      //Causes a bit of lag between frames
+      resized_image = resized_image.SmoothGaussian( 15 );
+    	resized_image._GammaCorrect( 2d );
+    	resized_image._EqualizeHist();
+
+    	Image<Hsv, byte> hsv_image = new Image<Hsv, byte>( size );
+    	CvInvoke.CvtColor( resized_image, hsv_image, ColorConversion.Bgr2Hsv );
+
+      if ( ShowHSV )
+    	CvInvoke.Imshow( "hsv", hsv_image );
+
+    	Image<Gray, byte> gray_image = new Image<Gray, byte>( size );
+    	CvInvoke.CvtColor( resized_image, gray_image, ColorConversion.Bgr2Gray );
+
+      if ( ShowGray )
+    	CvInvoke.Imshow( "gray", gray_image );
+
+    	ScalarArray lower = new ScalarArray( new Hsv( 0 , 0  , 0   ).MCvScalar );
+    	ScalarArray upper = new ScalarArray( new Hsv( 35, 255, 255 ).MCvScalar );
+
+    	CvInvoke.InRange( hsv_image, lower, upper, output );
+
+      if ( ShowGray )
+        CvInvoke.Imshow( "filter", output );
+    }
+
   }
 }
