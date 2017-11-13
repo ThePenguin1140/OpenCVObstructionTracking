@@ -185,6 +185,9 @@ namespace ShaprCVTest
     	resized_image._GammaCorrect( 2d );
     	resized_image._EqualizeHist();
 
+      resized_image = resized_image.Erode( 10 );
+      resized_image = resized_image.Dilate( 10 );
+
     	Image<Hsv, byte> hsv_image = new Image<Hsv, byte>( size );
     	CvInvoke.CvtColor( resized_image, hsv_image, ColorConversion.Bgr2Hsv );
 
