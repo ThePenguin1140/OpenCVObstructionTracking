@@ -214,5 +214,11 @@ namespace ShaprCVTest
       return output;
     }
 
+    private static Image<Gray, byte> FilterGlare( Image<Hsv, byte> input ) {
+      Image<Gray, byte> output = new Image<Gray, byte>( input.Size );
+
+      return output;
+    }
+
   }
 }
