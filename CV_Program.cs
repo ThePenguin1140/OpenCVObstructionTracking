@@ -100,11 +100,14 @@ namespace ShaprCVTest
     {
     	Size size = new Size( 700, 700 );
 
-    	//Load image
       Image<Gray, byte> filtered_image = new Image<Gray, byte>( size );
 
+      Image<Hsv, byte> preprocessed_image = Preprocess( input_image, size );
+
       //denoise, smoothe and threshold
-      filtered_image = FilterCups( Preprocess( input_image, size ) );
+      filtered_image = FilterCups( preprocessed_image );
+
+      FilterGlare( preprocessed_image );
 
     	Image<Bgr, byte> output_image = new Image<Bgr, byte>( input_image.Size );
     	output_image = input_image.ToImage<Bgr, byte>();
@@ -209,13 +212,21 @@ namespace ShaprCVTest
       CvInvoke.InRange( input, lower, upper, output );
 
       if ( ShowFiltered )
-        CvInvoke.Imshow( "filter", output );
+        CvInvoke.Imshow( "Cup Filter", output );
 
       return output;
     }
 
     private static Image<Gray, byte> FilterGlare( Image<Hsv, byte> input ) {
       Image<Gray, byte> output = new Image<Gray, byte>( input.Size );
+
+      ScalarArray lower = new ScalarArray( new Hsv( 91, 0, 0 ).MCvScalar );
+      ScalarArray upper = new ScalarArray( new Hsv( 180, 200, 255 ).MCvScalar );
+
+      CvInvoke.InRange( input, lower, upper, output );
+
+      if ( ShowFiltered )
+        CvInvoke.Imshow( "Glare Filter", output );
 
       return output;
     }
