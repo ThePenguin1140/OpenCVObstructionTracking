@@ -53,19 +53,23 @@ namespace ShaprCVTest {
       for ( int i = 0; i < contours.Size; i++ ) {
         Rectangle box = CvInvoke.BoundingRectangle( contours[i] );
 
-        if ( ( box.Width < 400 && box.Height < 400 ) &&
-           ( box.Width > 50 && box.Height > 50 ) &&
-           ( box.Height > box.Width && box.Location.Y > 100 ) && !HasParent( contour2, CvInvoke.BoundingRectangle( contours[i] ) ) ) {
-          tre2[t2id, 0] = tree[i, 0];
-          tre2[t2id, 1] = tree[i, 1];
-          tre2[t2id, 2] = tree[i, 2];
-          tre2[t2id, 3] = tree[i, 3];
+		    if ( ( box.Width < 400 && box.Height < 400 ) &&
+			     ( box.Width > 50 && box.Height > 175 ) &&
+			     ( box.Height > box.Width && box.Location.Y > 100 ) && !HasParent( contour2, CvInvoke.BoundingRectangle( contours[i] ) ) )
+           {
+              tre2[t2id, 0] = tree[i, 0];
+        			tre2[t2id, 1] = tree[i, 1];
+        			tre2[t2id, 2] = tree[i, 2];
+        			tre2[t2id, 3] = tree[i, 3];
 
-          if ( (float)box.Width / (float)box.Height > 0.52f ) {
-            BoxSplits.Add( 2 );
-          } else {
-            BoxSplits.Add( 1 );
-          }
+              if ( (float)box.Width / (float)box.Height > 0.55f )
+              {
+                BoxSplits.Add( 2 );
+              } 
+              else
+              {
+                BoxSplits.Add( 1 );
+              }
 
           contour2.Push( contours[i] );
           t2id++;
