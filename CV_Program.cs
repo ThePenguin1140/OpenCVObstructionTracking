@@ -90,6 +90,8 @@ namespace ShaprCVTest
           if ( keyPressed == 27  ) break;
           if ( keyPressed == 116 ) InitCupTracking(frame);
         }
+
+        System.Threading.Thread.Sleep( 100 );
       }
 
       Console.WriteLine( "CV_Program: DetectCups_Video(): Ended Video Function." );

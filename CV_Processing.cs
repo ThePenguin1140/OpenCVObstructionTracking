@@ -70,8 +70,6 @@ namespace ShaprCVTest
 
               if ( (float)box.Width / (float)box.Height > 0.52f )
               {
-                //We could have code here that splits the bounding boxes
-                Console.WriteLine( "CV_Processing: GetContours: Large Bounding Box Detected!" );
                 BoxSplits.Add( 2 );
               } 
               else
@@ -109,24 +107,27 @@ namespace ShaprCVTest
       {
         Rectangle box = CvInvoke.BoundingRectangle( contours[i] );
 
-        if ( (int)BoxSplits[i] == 1 ) 
+        if ( !CV_Program.TrackCups || GetMinDistance(box) < 150 )
         {
-          output.Draw( box, bgrRed, 2 );
-          if ( frame != null && CV_Program.TrackCups)
-            CvInvoke.PutText( frame, "[" + ( GetCupNum( box) + 1 ) + "]", new System.Drawing.Point( box.Location.X + 5, box.Location.Y - 10 ), FontFace.HersheyPlain, 1.25, new MCvScalar( 255, 0, 255 ), 2 );
-        } 
-        else if ( (int)BoxSplits[i] == 2 ) 
-        {
-          Rectangle box1 = new Rectangle( box.X                   - 1, box.Y, box.Width / 2, box.Height );
-          Rectangle box2 = new Rectangle( box.X + (box.Width / 2) + 1, box.Y, box.Width / 2, box.Height );
-          output.Draw( box1, bgrRed, 2 );
-          output.Draw( box2, bgrRed, 2 );
+          if ( (int)BoxSplits[i] == 1 ) 
+          {
+            output.Draw( box, bgrRed, 2 );
+            if ( frame != null && CV_Program.TrackCups)
+              CvInvoke.PutText( frame, "[" + ( GetCupNum( box) + 1 ) + "]", new System.Drawing.Point( box.Location.X + 5, box.Location.Y - 10 ), FontFace.HersheyPlain, 1.25, new MCvScalar( 255, 0, 255 ), 2 );
+          } 
+          else if ( (int)BoxSplits[i] == 2 ) 
+          {
+            Rectangle box1 = new Rectangle( box.X - 1, box.Y, box.Width / 2, box.Height );
+            Rectangle box2 = new Rectangle( box.X + ( box.Width / 2 ) + 1, box.Y, box.Width / 2, box.Height );
+            output.Draw( box1, bgrRed, 2 );
+            output.Draw( box2, bgrRed, 2 );
 
-          if ( frame != null && CV_Program.TrackCups )
-            CvInvoke.PutText( frame, "[" + ( GetCupNum( box1 ) + 1 ) + "]", new System.Drawing.Point( box1.Location.X + 5, box1.Location.Y - 10 ), FontFace.HersheyPlain, 1.25, new MCvScalar( 255, 0, 255 ), 2 );
-          if ( frame != null && CV_Program.TrackCups )
-            CvInvoke.PutText( frame, "[" + ( GetCupNum( box2 ) + 1 ) + "]", new System.Drawing.Point( box2.Location.X + 5, box2.Location.Y - 10 ), FontFace.HersheyPlain, 1.25, new MCvScalar( 255, 0, 255 ), 2 );
-        }  
+            if ( frame != null && CV_Program.TrackCups )
+              CvInvoke.PutText( frame, "[" + ( GetCupNum( box1 ) + 1 ) + "]", new System.Drawing.Point( box1.Location.X + 5, box1.Location.Y - 10 ), FontFace.HersheyPlain, 1.25, new MCvScalar( 255, 0, 255 ), 2 );
+            if ( frame != null && CV_Program.TrackCups )
+              CvInvoke.PutText( frame, "[" + ( GetCupNum( box2 ) + 1 ) + "]", new System.Drawing.Point( box2.Location.X + 5, box2.Location.Y - 10 ), FontFace.HersheyPlain, 1.25, new MCvScalar( 255, 0, 255 ), 2 );
+          }  
+        }
       }
 
       UpdateCupTracking();
@@ -179,9 +180,12 @@ namespace ShaprCVTest
         }
       }
 
-      NewBoxes[CNF_i] = Box;
-      CupNumsFound[CNF_i] = n;
-      CNF_i++;
+      if ( n >= 0 )
+      {
+        NewBoxes[CNF_i] = Box;
+        CupNumsFound[CNF_i] = n;
+        CNF_i++;
+      }
 
       return n;
     }
@@ -197,6 +201,25 @@ namespace ShaprCVTest
       float distance = (float) Math.Sqrt( ( horizontalDistance * horizontalDistance ) + ( verticalDistance * verticalDistance ) );
 
 	    return distance;
+    }
+
+    public static float GetMinDistance( Rectangle box )
+    {
+      float d = float.PositiveInfinity;
+      if ( CV_Program.TrackCups )
+      {
+        for ( int i = 0; i< 3; i++ )
+        {
+          float newDist = GetDistance( box, CV_Program.Cups[i].BoundingBox );
+
+          if ( newDist < d )
+          {
+            d = newDist;
+          }
+        }
+      }
+
+      return d;
     }
 
     public static Point Center( Rectangle rect )
