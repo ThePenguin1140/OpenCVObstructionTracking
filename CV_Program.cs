@@ -220,7 +220,7 @@ namespace ShaprCVTest
     private static Image<Gray, byte> FilterGlare( Image<Hsv, byte> input ) {
       Image<Gray, byte> output = new Image<Gray, byte>( input.Size );
 
-      ScalarArray lower = new ScalarArray( new Hsv( 91, 0, 0 ).MCvScalar );
+      ScalarArray lower = new ScalarArray( new Hsv( 75, 0, 0 ).MCvScalar );
       ScalarArray upper = new ScalarArray( new Hsv( 180, 200, 255 ).MCvScalar );
 
       CvInvoke.InRange( input, lower, upper, output );
