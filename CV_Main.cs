@@ -8,8 +8,9 @@ namespace ShaprCVTest
     {
       //CV_Program.DetectCups_Image ("..\\..\\Images\\Cups1.jpg");
       //CV_Program.DetectCups_Video ("..\\..\\Videos\\Cups.mp4", true, true);
+      CV_Program.DetectCups_Video ("..\\..\\Videos\\Cups_Cut.mp4");
 
-      CV_Program.DetectCups_Video ();
+      //CV_Program.DetectCups_Video ();
     }
   }
 }

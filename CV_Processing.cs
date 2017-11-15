@@ -123,9 +123,10 @@ namespace ShaprCVTest
             output.Draw( box2, bgrRed, 2 );
 
             if ( frame != null && CV_Program.TrackCups )
-              CvInvoke.PutText( frame, "[" + ( GetCupNum( box1 ) + 1 ) + "]", new System.Drawing.Point( box1.Location.X + 5, box1.Location.Y - 10 ), FontFace.HersheyPlain, 1.25, new MCvScalar( 255, 0, 255 ), 2 );
-            if ( frame != null && CV_Program.TrackCups )
               CvInvoke.PutText( frame, "[" + ( GetCupNum( box2 ) + 1 ) + "]", new System.Drawing.Point( box2.Location.X + 5, box2.Location.Y - 10 ), FontFace.HersheyPlain, 1.25, new MCvScalar( 255, 0, 255 ), 2 );
+            if ( frame != null && CV_Program.TrackCups )
+              CvInvoke.PutText( frame, "[" + ( GetCupNum( box1 ) + 1 ) + "]", new System.Drawing.Point( box1.Location.X + 5, box1.Location.Y - 10 ), FontFace.HersheyPlain, 1.25, new MCvScalar( 255, 0, 255 ), 2 );
+
           }  
         }
       }
@@ -195,8 +196,8 @@ namespace ShaprCVTest
       Point center1 = Center( rect1 );
       Point center2 = Center( rect2 );
 
-      float horizontalDistance = ( center2.X - center1.X );
-      float verticalDistance   = ( center2.Y - center1.Y );
+      float horizontalDistance = Math.Abs(( center2.X - center1.X ));
+      float verticalDistance   = Math.Abs(( center2.Y - center1.Y ));
 
       float distance = (float) Math.Sqrt( ( horizontalDistance * horizontalDistance ) + ( verticalDistance * verticalDistance ) );
 
@@ -247,11 +248,11 @@ namespace ShaprCVTest
     {
       if ( CV_Program.TrackCups )
       {
-        for ( int i = 0; i < NewBoxes.Length; i++ )
+        for ( int i = NewBoxes.Length-1; i >= 0; i-- )
         {
           for ( int j = 0; j < 3; j++ )
           {
-            if ( CupNumsFound[i] == CV_Program.Cups[j].CupID ) CV_Program.Cups[j].BoundingBox = NewBoxes[i];
+            if ( CupNumsFound[i] == j ) CV_Program.Cups[j].BoundingBox = NewBoxes[i];
           }
         }
       }

@@ -91,7 +91,6 @@ namespace ShaprCVTest
           if ( keyPressed == 116 ) InitCupTracking(frame);
         }
 
-        System.Threading.Thread.Sleep( 100 );
       }
 
       Console.WriteLine( "CV_Program: DetectCups_Video(): Ended Video Function." );
@@ -120,8 +119,6 @@ namespace ShaprCVTest
     {
       if ( !TrackCups )
       {
-        TrackCups = true;
-
         Cups = new CV_Cup[3];
 
         for ( int i = 0; i < 3; i++ )
@@ -149,6 +146,8 @@ namespace ShaprCVTest
         Console.WriteLine( "CV_Program: InitCupTracking(): [" + Cups[0].CupID + "] " + Cups[0].BoundingBox);
         Console.WriteLine( "CV_Program: InitCupTracking(): [" + Cups[1].CupID + "] " + Cups[1].BoundingBox);
         Console.WriteLine( "CV_Program: InitCupTracking(): [" + Cups[2].CupID + "] " + Cups[2].BoundingBox);
+
+        TrackCups = true;
       }
     }
   }
