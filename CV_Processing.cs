@@ -10,6 +10,14 @@ namespace ShaprCVTest
 {
   class PreProcessing
   {
+    //To keep track of which 'contours' need to be split
+    //1 = no split, 2 = in half, etc.
+    private static ArrayList    BoxSplits                         ;
+    private static int[]        CupNumsFound  = new int[99]       ;
+    private static Rectangle[]  NewBoxes      = new Rectangle[99] ;
+    private static int          CNF_i         = 0                 ;
+
+
     public static bool HasParent( VectorOfVectorOfPoint currentContours, Rectangle checkMe )
     {
       for ( int n = 0; n < currentContours.Size; n++ )
@@ -26,10 +34,6 @@ namespace ShaprCVTest
 
       return false;
     }
-
-    //To keep track of which 'contours' need to be split
-    //1 = no split, 2 = in half, etc.
-    private static ArrayList BoxSplits;
 
     public static VectorOfVectorOfPoint GetContours( Image<Gray, byte> input )
     {
@@ -64,7 +68,7 @@ namespace ShaprCVTest
         			tre2[t2id, 2] = tree[i, 2];
         			tre2[t2id, 3] = tree[i, 3];
 
-              if ( (float)box.Width / (float)box.Height > 0.55f )
+              if ( (float)box.Width / (float)box.Height > 0.52f )
               {
                 //We could have code here that splits the bounding boxes
                 Console.WriteLine( "CV_Processing: GetContours: Large Bounding Box Detected!" );
@@ -99,6 +103,8 @@ namespace ShaprCVTest
     {
       Bgr bgrRed = new Bgr( Color.Red );
 
+      ResetCupsFound();
+
 	    for ( int i = 0; i < contours.Size; i++ ) 
       {
         Rectangle box = CvInvoke.BoundingRectangle( contours[i] );
@@ -120,9 +126,10 @@ namespace ShaprCVTest
             CvInvoke.PutText( frame, "[" + ( GetCupNum( box1 ) + 1 ) + "]", new System.Drawing.Point( box1.Location.X + 5, box1.Location.Y - 10 ), FontFace.HersheyPlain, 1.25, new MCvScalar( 255, 0, 255 ), 2 );
           if ( frame != null && CV_Program.TrackCups )
             CvInvoke.PutText( frame, "[" + ( GetCupNum( box2 ) + 1 ) + "]", new System.Drawing.Point( box2.Location.X + 5, box2.Location.Y - 10 ), FontFace.HersheyPlain, 1.25, new MCvScalar( 255, 0, 255 ), 2 );
-        }    
-
+        }  
       }
+
+      UpdateCupTracking();
     }
 
     public static void Preprocess( Mat input, Image<Gray, byte> output, Size size ) 
@@ -165,12 +172,16 @@ namespace ShaprCVTest
       for ( int i = 0; i < 3; i++ )
       {
         float newDist = GetDistance( Box, CV_Program.Cups[i].BoundingBox );
-        if ( newDist < d || d == -1.0f)
+        if ( !IsIn(i) && ( newDist < d || d == -1.0f ) )
         {
           n = i;
           d = newDist;
         }
       }
+
+      NewBoxes[CNF_i] = Box;
+      CupNumsFound[CNF_i] = n;
+      CNF_i++;
 
       return n;
     }
@@ -191,6 +202,36 @@ namespace ShaprCVTest
     public static Point Center( Rectangle rect )
     {
       return new Point( rect.Left + rect.Width / 2, rect.Top + rect.Height / 2);
+    }
+
+    private static void ResetCupsFound()
+    {
+      CupNumsFound = new int[99];
+      NewBoxes        = new Rectangle[99];
+      CNF_i = 0;
+    }
+
+    private static bool IsIn( int x )
+    {
+      for ( int i = 0; i < CNF_i; i++ )
+      {
+        if ( x == CupNumsFound[i] ) return true;
+      }
+      return false;
+    }
+  
+    public static void UpdateCupTracking()
+    {
+      if ( CV_Program.TrackCups )
+      {
+        for ( int i = 0; i < NewBoxes.Length; i++ )
+        {
+          for ( int j = 0; j < 3; j++ )
+          {
+            if ( CupNumsFound[i] == CV_Program.Cups[j].CupID ) CV_Program.Cups[j].BoundingBox = NewBoxes[i];
+          }
+        }
+      }
     }
 
   }
