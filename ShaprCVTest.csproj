@@ -63,8 +63,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CV_Main.cs" />
     <Compile Include="CV_Program.cs" />
-    <Compile Include="CV_Cup.cs" />
     <Compile Include="CV_Processing.cs" />
+    <Compile Include="CV_Cup.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
