@@ -62,7 +62,11 @@ namespace ShaprCVTest {
         			tre2[t2id, 2] = tree[i, 2];
         			tre2[t2id, 3] = tree[i, 3];
 
-              if ( (float)box.Width / (float)box.Height > 0.55f )
+              if ( (float)box.Width / (float)box.Height > 0.95f )
+              {
+                BoxSplits.Add( 3 );
+              } 
+              else if ( (float)box.Width / (float)box.Height > 0.55f )
               {
                 BoxSplits.Add( 2 );
               } 
@@ -112,7 +116,21 @@ namespace ShaprCVTest {
               CvInvoke.PutText( frame, "[" + ( GetCupNum( box2 ) + 1 ) + "]", new System.Drawing.Point( box2.Location.X + 5, box2.Location.Y - 10 ), FontFace.HersheyPlain, 1.25, new MCvScalar( 255, 0, 255 ), 2 );
             if ( frame != null && CV_Program.TrackCups )
               CvInvoke.PutText( frame, "[" + ( GetCupNum( box1 ) + 1 ) + "]", new System.Drawing.Point( box1.Location.X + 5, box1.Location.Y - 10 ), FontFace.HersheyPlain, 1.25, new MCvScalar( 255, 0, 255 ), 2 );
+          } else if ( (int)BoxSplits[i] == 3 ) {
+            Rectangle box1 = new Rectangle( box.X - 1, box.Y, box.Width / 3, box.Height );
+            Rectangle box2 = new Rectangle( box.X + ( (box.Width / 3)*1 ) + 1, box.Y, box.Width / 3, box.Height );
+            Rectangle box3 = new Rectangle( box.X + ( (box.Width / 3)*2 ) + 1, box.Y, box.Width / 3, box.Height );
 
+            output.Draw( box1, bgrRed, 2 );
+            output.Draw( box2, bgrRed, 2 );
+            output.Draw( box3, bgrRed, 2 );
+
+            if ( frame != null && CV_Program.TrackCups )
+              CvInvoke.PutText( frame, "[" + ( GetCupNum( box3 ) + 1 ) + "]", new System.Drawing.Point( box3.Location.X + 5, box3.Location.Y - 10 ), FontFace.HersheyPlain, 1.25, new MCvScalar( 255, 0, 255 ), 2 );
+            if ( frame != null && CV_Program.TrackCups )
+              CvInvoke.PutText( frame, "[" + ( GetCupNum( box2 ) + 1 ) + "]", new System.Drawing.Point( box2.Location.X + 5, box2.Location.Y - 10 ), FontFace.HersheyPlain, 1.25, new MCvScalar( 255, 0, 255 ), 2 );
+            if ( frame != null && CV_Program.TrackCups )
+              CvInvoke.PutText( frame, "[" + ( GetCupNum( box1 ) + 1 ) + "]", new System.Drawing.Point( box1.Location.X + 5, box1.Location.Y - 10 ), FontFace.HersheyPlain, 1.25, new MCvScalar( 255, 0, 255 ), 2 );
           }
         }
       }
@@ -186,12 +204,24 @@ namespace ShaprCVTest {
     }
 
     public static void UpdateCupTracking() {
+      bool[] found = new bool[3];
+      found[0] = false;
+      found[1] = false;
+      found[2] = false;
+
       if ( CV_Program.TrackCups ) {
         for ( int i = NewBoxes.Length - 1; i >= 0; i-- ) {
           for ( int j = 0; j < 3; j++ ) {
-            if ( CupNumsFound[i] == j ) CV_Program.Cups[j].BoundingBox = NewBoxes[i];
+            if ( CupNumsFound[i] == j ) { 
+              CV_Program.Cups[j].BoundingBox = NewBoxes[i];
+              found[j] = true;
+            }
           }
         }
+
+        if ( !found[0] ) CV_Program.Cups[0].BoundingBox = new Rectangle( 9000, 9000, 10, 10);
+        if ( !found[1] ) CV_Program.Cups[1].BoundingBox = new Rectangle( 9000, 9000, 10, 10);
+        if ( !found[2] ) CV_Program.Cups[2].BoundingBox = new Rectangle( 9000, 9000, 10, 10);
       }
     }
 
