@@ -157,9 +157,6 @@ namespace ShaprCVTest
     	Image<Gray, byte> gray_image = new Image<Gray, byte>( size );
     	CvInvoke.CvtColor( resized_image, gray_image, ColorConversion.Bgr2Gray );
 
-    	if ( CV_Program.ShowGray )
-    		CvInvoke.Imshow( "gray", gray_image );
-
     	ScalarArray lower = new ScalarArray( new Hsv( 0, 0, 0 ).MCvScalar );
     	ScalarArray upper = new ScalarArray( new Hsv( 35, 255, 255 ).MCvScalar );
 
