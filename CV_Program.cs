@@ -89,19 +89,18 @@ namespace ShaprCVTest
             // Only the least-significant 16 bits contain the actual key code. The other bits contain modifier key states
             keyPressed &= 0xFFFF;
             Console.WriteLine( "CV_Program: DetectCups_Video(): Key pressed: " + keyPressed );
-            if ( keyPressed == 27 ) break;
-            else if ( keyPressed == 97 && nextFrame > 0 && paused ) {
-              //prev 
-              nextFrame -= 1;
-            } else if ( keyPressed == 100 && nextFrame < vidCap.GetCaptureProperty( CapProp.FrameCount ) && paused ) {
-              //next
-              nextFrame += 1;
-            } else if ( keyPressed == 32 ) paused = !paused;
-            if ( keyPressed == 116 ) InitCupTracking(frame);
-          }
-          vidCap.SetCaptureProperty( CapProp.PosFrames, nextFrame );
-          frame = vidCap.QueryFrame();
-          
+          if ( keyPressed == 27 ) break;
+          else if ( keyPressed == 116 ) InitCupTracking( frame );
+          else if ( keyPressed == 97 && nextFrame > 0 && paused ) {
+            //prev 
+            nextFrame -= 1;
+          } else if ( keyPressed == 100 && nextFrame < vidCap.GetCaptureProperty( CapProp.FrameCount ) && paused ) {
+            //next
+            nextFrame += 1;
+          } else if ( keyPressed == 32 ) paused = !paused;
+        }
+        vidCap.SetCaptureProperty( CapProp.PosFrames, nextFrame );
+        frame = vidCap.QueryFrame();
       }
 
       Console.WriteLine( "CV_Program: DetectCups_Video(): Ended Video Function." );
