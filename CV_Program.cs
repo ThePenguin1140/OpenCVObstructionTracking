@@ -185,7 +185,7 @@ namespace ShaprCVTest
 
       //Causes a bit of lag between frames
       resized_image = resized_image.SmoothGaussian( 15 );
-    	resized_image._GammaCorrect( 2d );
+    	resized_image._GammaCorrect( 2.5 );
     	resized_image._EqualizeHist();
 
       resized_image = resized_image.Erode( 10 );
