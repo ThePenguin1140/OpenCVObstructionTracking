@@ -4,6 +4,7 @@ using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
 using Emgu.CV.Util;
 using System.Drawing;
+using System.Collections;
 
 namespace ShaprCVTest
 {
@@ -26,10 +27,17 @@ namespace ShaprCVTest
       return false;
     }
 
+    //To keep track of which 'contours' need to be split
+    //1 = no split, 2 = in half, etc.
+    private static ArrayList BoxSplits;
+
     public static VectorOfVectorOfPoint GetContours( Image<Gray, byte> input )
     {
       VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint();
     	VectorOfVectorOfPoint contour2 = new VectorOfVectorOfPoint();
+
+      BoxSplits = new ArrayList();
+
 
     	Image<Gray, float> laplace_image      = input.Laplace( 3 );
     	Image<Gray, float> erode_image        = laplace_image.Erode( 2 );
@@ -60,9 +68,14 @@ namespace ShaprCVTest
               {
                 //We could have code here that splits the bounding boxes
                 Console.WriteLine( "CV_Processing: GetContours: Large Bounding Box Detected!" );
+                BoxSplits.Add( 2 );
+              } 
+              else
+              {
+                BoxSplits.Add( 1 );
               }
 
-            contour2.Push( contours[i] );
+              contour2.Push( contours[i] );
         			t2id++;
 		      }
       }
@@ -90,10 +103,25 @@ namespace ShaprCVTest
       {
         Rectangle box = CvInvoke.BoundingRectangle( contours[i] );
 
-		    output.Draw( box, bgrRed, 2 );
+        if ( (int)BoxSplits[i] == 1 ) 
+        {
+          output.Draw( box, bgrRed, 2 );
+          if ( frame != null && CV_Program.TrackCups)
+            CvInvoke.PutText( frame, "[" + ( GetCupNum( box) + 1 ) + "]", new System.Drawing.Point( box.Location.X + 5, box.Location.Y - 10 ), FontFace.HersheyPlain, 1.25, new MCvScalar( 255, 0, 255 ), 2 );
+        } 
+        else if ( (int)BoxSplits[i] == 2 ) 
+        {
+          Rectangle box1 = new Rectangle( box.X                   - 1, box.Y, box.Width / 2, box.Height );
+          Rectangle box2 = new Rectangle( box.X + (box.Width / 2) + 1, box.Y, box.Width / 2, box.Height );
+          output.Draw( box1, bgrRed, 2 );
+          output.Draw( box2, bgrRed, 2 );
 
-        if ( frame != null && CV_Program.TrackCups)
-          CvInvoke.PutText( frame, "[" + ( GetCupNum(box) + 1 ) + "]", new System.Drawing.Point( box.Location.X + 5, box.Location.Y - 10 ), FontFace.HersheyPlain, 1.25, new MCvScalar( 255, 0, 255 ), 2 );
+          if ( frame != null && CV_Program.TrackCups )
+            CvInvoke.PutText( frame, "[" + ( GetCupNum( box1 ) + 1 ) + "]", new System.Drawing.Point( box1.Location.X + 5, box1.Location.Y - 10 ), FontFace.HersheyPlain, 1.25, new MCvScalar( 255, 0, 255 ), 2 );
+          if ( frame != null && CV_Program.TrackCups )
+            CvInvoke.PutText( frame, "[" + ( GetCupNum( box2 ) + 1 ) + "]", new System.Drawing.Point( box2.Location.X + 5, box2.Location.Y - 10 ), FontFace.HersheyPlain, 1.25, new MCvScalar( 255, 0, 255 ), 2 );
+        }    
+
       }
     }
 
