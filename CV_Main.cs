@@ -2,15 +2,15 @@
 
 namespace ShaprCVTest
 {
-  public class CV_Main
-  {
-    public static void Main()
+    public class CV_Main
     {
-      //CV_Program.DetectCups_Image ("..\\..\\Images\\Cups1.jpg");
-      //CV_Program.DetectCups_Video ("..\\..\\Videos\\Cups.mp4", true, true);
-      CV_Program.DetectCups_Video ("..\\..\\Videos\\Cups_Cut.mp4");
+        public static void Main()
+        {
+            //CV_Program.DetectCups_Image ("..\\..\\Images\\Cups1.jpg");
+            //CV_Program.DetectCups_Video ("..\\..\\Videos\\Cups.mp4", true, true);
+            CV_Program.DetectCups_Video("..\\..\\Videos\\Cups_Cut.mp4");
 
-      //CV_Program.DetectCups_Video ();
+            //CV_Program.DetectCups_Video ();
+        }
     }
-  }
 }
