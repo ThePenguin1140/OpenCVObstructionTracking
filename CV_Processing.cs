@@ -98,25 +98,32 @@ namespace ShaprCVTest {
 
       ResetCupsFound();
 
+      ArrayList boxesFound = new ArrayList();
+
       for ( int i = 0; i < contours.Size; i++ ) {
         Rectangle box = CvInvoke.BoundingRectangle( contours[i] );
 
-        if ( !CV_Program.TrackCups || GetMinDistance( box ) < 150 ) {
-          if ( (int)BoxSplits[i] == 1 ) {
+        if ( !CV_Program.TrackCups || GetMinDistance( box ) < 150 )
+        {
+          if ( (int)BoxSplits[i] == 1 )
+          {
             output.Draw( box, bgrRed, 2 );
-            if ( frame != null && CV_Program.TrackCups )
-              CvInvoke.PutText( frame, "[" + ( GetCupNum( box ) + 1 ) + "]", new System.Drawing.Point( box.Location.X + 5, box.Location.Y - 10 ), FontFace.HersheyPlain, 1.25, new MCvScalar( 255, 0, 255 ), 2 );
-          } else if ( (int)BoxSplits[i] == 2 ) {
+
+            boxesFound.Add( box );
+          }
+          else if ( (int)BoxSplits[i] == 2 )
+          {
             Rectangle box1 = new Rectangle( box.X - 1, box.Y, box.Width / 2, box.Height );
             Rectangle box2 = new Rectangle( box.X + ( box.Width / 2 ) + 1, box.Y, box.Width / 2, box.Height );
+
             output.Draw( box1, bgrRed, 2 );
             output.Draw( box2, bgrRed, 2 );
 
-            if ( frame != null && CV_Program.TrackCups )
-              CvInvoke.PutText( frame, "[" + ( GetCupNum( box2 ) + 1 ) + "]", new System.Drawing.Point( box2.Location.X + 5, box2.Location.Y - 10 ), FontFace.HersheyPlain, 1.25, new MCvScalar( 255, 0, 255 ), 2 );
-            if ( frame != null && CV_Program.TrackCups )
-              CvInvoke.PutText( frame, "[" + ( GetCupNum( box1 ) + 1 ) + "]", new System.Drawing.Point( box1.Location.X + 5, box1.Location.Y - 10 ), FontFace.HersheyPlain, 1.25, new MCvScalar( 255, 0, 255 ), 2 );
-          } else if ( (int)BoxSplits[i] == 3 ) {
+            boxesFound.Add( box1 );
+            boxesFound.Add( box2 );
+          }
+          else if ( (int)BoxSplits[i] == 3 )
+          {
             Rectangle box1 = new Rectangle( box.X - 1, box.Y, box.Width / 3, box.Height );
             Rectangle box2 = new Rectangle( box.X + ( (box.Width / 3)*1 ) + 1, box.Y, box.Width / 3, box.Height );
             Rectangle box3 = new Rectangle( box.X + ( (box.Width / 3)*2 ) + 1, box.Y, box.Width / 3, box.Height );
@@ -125,20 +132,72 @@ namespace ShaprCVTest {
             output.Draw( box2, bgrRed, 2 );
             output.Draw( box3, bgrRed, 2 );
 
-            if ( frame != null && CV_Program.TrackCups )
-              CvInvoke.PutText( frame, "[" + ( GetCupNum( box3 ) + 1 ) + "]", new System.Drawing.Point( box3.Location.X + 5, box3.Location.Y - 10 ), FontFace.HersheyPlain, 1.25, new MCvScalar( 255, 0, 255 ), 2 );
-            if ( frame != null && CV_Program.TrackCups )
-              CvInvoke.PutText( frame, "[" + ( GetCupNum( box2 ) + 1 ) + "]", new System.Drawing.Point( box2.Location.X + 5, box2.Location.Y - 10 ), FontFace.HersheyPlain, 1.25, new MCvScalar( 255, 0, 255 ), 2 );
-            if ( frame != null && CV_Program.TrackCups )
-              CvInvoke.PutText( frame, "[" + ( GetCupNum( box1 ) + 1 ) + "]", new System.Drawing.Point( box1.Location.X + 5, box1.Location.Y - 10 ), FontFace.HersheyPlain, 1.25, new MCvScalar( 255, 0, 255 ), 2 );
+            boxesFound.Add( box1 );
+            boxesFound.Add( box2 );
+            boxesFound.Add( box3 );
           }
         }
       }
 
+      ReLabelCups( boxesFound, frame );
       UpdateCupTracking();
     }
 
-    public static int GetCupNum( Rectangle Box ) {
+    public static void ReLabelCups( ArrayList boxes, Mat frame)
+    {
+      CV_Cup[] prevCups = CV_Program.Cups;
+
+      Rectangle AnyMissingbox = new Rectangle(888, 888, 8, 8);
+
+      if ( CV_Program.TrackCups )
+      {
+        foreach ( Rectangle box in boxes )
+        {
+          float d = float.PositiveInfinity;
+          Rectangle correctBB = new Rectangle();
+          int id = -2;
+
+          foreach ( CV_Cup oldCup in prevCups )
+          {
+            float newDist = GetDistance( box, oldCup.BoundingBox );
+
+            if ( newDist < d && newDist < 2000 && !IsIn(oldCup.CupID))
+            {
+              d = newDist;
+              correctBB = box;
+              id = oldCup.CupID;
+            }
+          }
+
+          if ( frame != null && CV_Program.TrackCups )
+                CvInvoke.PutText( frame, "[" + ( id + 1 ) + "]", new System.Drawing.Point( correctBB.Location.X + 5, correctBB.Location.Y - 10 ), FontFace.HersheyPlain, 1.25, new MCvScalar( 255, 0, 255 ), 2 );
+          if ( id >= 0 )
+          {
+            NewBoxes[CNF_i] = correctBB;
+            CupNumsFound[CNF_i] = id;
+            CNF_i++;
+          }
+          else 
+          {
+            AnyMissingbox = box;
+          }
+        }
+
+        if ( CNF_i < 3 )
+        {
+          int missing = WhichCupIsMissing();
+          if ( missing != -1 ) 
+          {
+            NewBoxes[CNF_i] = AnyMissingbox;
+            CupNumsFound[CNF_i] = missing;
+            CNF_i++;
+          }
+        }
+      }  
+    }
+
+    public static int GetCupNum( Rectangle Box )
+    {
       int n = -1;
       float d = -1.0f;
 
@@ -194,6 +253,24 @@ namespace ShaprCVTest {
       CupNumsFound = new int[99];
       NewBoxes = new Rectangle[99];
       CNF_i = 0;
+    }
+
+    private static int WhichCupIsMissing() 
+    {
+      for ( int i = 0; i < 3; i++ )
+      {
+        bool found = false;
+
+        for ( int j = 0; j< 3; j++ )
+        {
+          if ( CupNumsFound[j] == i ) found = true;
+        }
+
+        if ( !found )
+          return i;
+      }
+
+      return -1;
     }
 
     private static bool IsIn( int x ) {
