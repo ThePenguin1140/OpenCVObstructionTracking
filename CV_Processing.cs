@@ -249,5 +249,36 @@ namespace ShaprCVTest {
       return output;
     }
 
+    /**
+     * This function will update the IDs of the current list of identified cups based on
+     * the previous list of cups.
+     * <param name="previous">Array of previous Cup objects.</param>
+     * <param name="current">Array of current Cup objects.</param>
+     * <returns>Returns an array of CV_Cup with updated IDs</returns>
+     */
+    private static CV_Cup[] updateCupIDs(CV_Cup[] previous, CV_Cup[] current)
+    {
+      CV_Cup[] updatedCups = null;
+      current.CopyTo(updatedCups, 0);
+
+      foreach (CV_Cup prev in previous)
+      {
+        int candiateIndex = -1;
+        int candiateID = -1;
+        double shortestDistance = double.MaxValue;
+        for( int i = 0; i < current.Length; i++)
+        {
+          CV_Cup cur = current[i];
+          if (GetDistance(prev.BoundingBox, cur.BoundingBox) < shortestDistance)
+          {
+            candiateID = prev.CupID;
+            candiateIndex = i;
+            shortestDistance = GetDistance(prev.BoundingBox, cur.BoundingBox);
+          }
+        }
+        updatedCups[candiateIndex].CupID = candiateID;
+      }
+      return updatedCups;
+    }
   }
 }
