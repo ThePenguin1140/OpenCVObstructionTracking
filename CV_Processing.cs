@@ -100,10 +100,11 @@ namespace ShaprCVTest {
 
       ArrayList boxesFound = new ArrayList();
 
-      for ( int i = 0; i < contours.Size; i++ ) {
+      for ( int i = 0; i < contours.Size; i++ )
+      {
         Rectangle box = CvInvoke.BoundingRectangle( contours[i] );
 
-        if ( !CV_Program.TrackCups || GetMinDistance( box ) < 150 )
+        if ( true || GetMinDistance( box ) < 150 )
         {
           if ( (int)BoxSplits[i] == 1 )
           {
@@ -139,8 +140,8 @@ namespace ShaprCVTest {
         }
       }
 
-      ReLabelCups( boxesFound, frame );
-      UpdateCupTracking();
+      if ( contours.Size != 0 ) ReLabelCups( boxesFound, frame );
+      if ( contours.Size != 0 ) UpdateCupTracking();
     }
 
     public static void ReLabelCups( ArrayList boxes, Mat frame)
@@ -151,6 +152,55 @@ namespace ShaprCVTest {
 
       if ( CV_Program.TrackCups )
       {
+        for ( int x = 0; x < 3; x++ )
+        {
+          float d = float.PositiveInfinity;
+          Rectangle correctBB = new Rectangle();
+          int id = -2;
+
+          foreach ( CV_Cup oldCup in prevCups )
+          {
+            foreach ( Rectangle box in boxes )
+            {
+              float newDist = GetDistance( box, oldCup.BoundingBox );
+
+              if ( newDist<d && newDist< 100 && !IsIn(oldCup.CupID))
+              {
+                d = newDist;
+                correctBB = box;
+                id = oldCup.CupID;
+              }
+            }
+          }
+
+          if ( id >= 0 )
+          {
+            boxes.Remove( correctBB );
+            NewBoxes[CNF_i] = correctBB;
+            CupNumsFound[CNF_i] = id;
+            CNF_i++;
+          }
+        }
+
+        if ( CNF_i < 3 && boxes.Count > 0)
+        {
+          int missing = WhichCupIsMissing();
+          Console.WriteLine( "MISSING: " + missing );
+          if ( missing != -1 ) 
+          {
+            NewBoxes[CNF_i] = (Rectangle)boxes[0];
+            CupNumsFound[CNF_i] = missing;
+            CNF_i++;
+          }
+        }
+
+        for ( int i = 0; i < CNF_i; i++ )
+        {
+          if ( frame != null && CV_Program.TrackCups )
+            CvInvoke.PutText( frame, "[" + ( CupNumsFound[i] + 1 ) + "]", new System.Drawing.Point( NewBoxes[i].Location.X + 5, NewBoxes[i].Location.Y - 10 ), FontFace.HersheyPlain, 1.25, new MCvScalar( 255, 0, 255 ), 2 );
+        }
+
+        /*
         foreach ( Rectangle box in boxes )
         {
           float d = float.PositiveInfinity;
@@ -193,6 +243,7 @@ namespace ShaprCVTest {
             CNF_i++;
           }
         }
+      */
       }  
     }
 
@@ -253,15 +304,21 @@ namespace ShaprCVTest {
       CupNumsFound = new int[99];
       NewBoxes = new Rectangle[99];
       CNF_i = 0;
+
+      for ( int i = 0; i < 99; i++ )
+      {
+        CupNumsFound[i] = -1;
+      }
     }
 
     private static int WhichCupIsMissing() 
     {
+      Console.Write( "WhichMissing: [" + CupNumsFound[0] + "] [" + CupNumsFound[1] + "] [" + CupNumsFound[2] + "]" );
       for ( int i = 0; i < 3; i++ )
       {
         bool found = false;
 
-        for ( int j = 0; j< 3; j++ )
+        for ( int j = 0; j < 3; j++ )
         {
           if ( CupNumsFound[j] == i ) found = true;
         }
@@ -296,9 +353,15 @@ namespace ShaprCVTest {
           }
         }
 
-        if ( !found[0] ) CV_Program.Cups[0].BoundingBox = new Rectangle( 9000, 9000, 10, 10);
-        if ( !found[1] ) CV_Program.Cups[1].BoundingBox = new Rectangle( 9000, 9000, 10, 10);
-        if ( !found[2] ) CV_Program.Cups[2].BoundingBox = new Rectangle( 9000, 9000, 10, 10);
+        if ( !found[0] ) CV_Program.Cups[0].BoundingBox = new Rectangle( CV_Program.Cups[0].BoundingBox.X, 9000, 
+                                                                         CV_Program.Cups[0].BoundingBox.Width, 
+                                                                         CV_Program.Cups[0].BoundingBox.Height);
+        if ( !found[1] ) CV_Program.Cups[1].BoundingBox = new Rectangle( CV_Program.Cups[1].BoundingBox.X, 9000, 
+                                                                         CV_Program.Cups[1].BoundingBox.Width,
+                                                                         CV_Program.Cups[1].BoundingBox.Height);
+        if ( !found[2] ) CV_Program.Cups[2].BoundingBox = new Rectangle( CV_Program.Cups[2].BoundingBox.X, 9000,  
+                                                                         CV_Program.Cups[2].BoundingBox.Width,
+                                                                         CV_Program.Cups[2].BoundingBox.Height);
       }
     }
 
