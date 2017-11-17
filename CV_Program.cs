@@ -4,6 +4,7 @@ using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
 using Emgu.CV.Util;
 using System.Drawing;
+using System.Threading;
 
 namespace ShaprCVTest 
 {
@@ -62,7 +63,11 @@ namespace ShaprCVTest
       }
 
       while ( running && totalFrames > frameNum ) {
-        if( frame != null) CvInvoke.Imshow( "Video", frame );
+        lock (lockObject)
+        {
+          if( frame != null) CvInvoke.Imshow( "Video", frame );  
+        }
+        Thread.Sleep(500);
       }
 
       vidCap.Stop();
