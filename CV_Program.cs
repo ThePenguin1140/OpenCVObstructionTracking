@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Diagnostics;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
 using Emgu.CV.Util;
 using System.Drawing;
+using System.Net.Mime;
 using System.Threading;
+using System.Windows.Forms;
+using Emgu.CV.UI;
 
 namespace ShaprCVTest
 {
@@ -16,7 +20,7 @@ namespace ShaprCVTest
         public static bool ShowFiltered = false;
 
         private static Capture vidCap;
-        private static Image<Bgr, byte> frame = null;
+        private static Image<Bgr, byte> frame = new Image<Bgr, byte>(new Size(0,0));
 
         private static bool running = false;
         private static double frameNum = 0d;
@@ -50,13 +54,17 @@ namespace ShaprCVTest
             CV_Program.ShowHSV = ShowHSV;
             CV_Program.ShowFiltered = ShowGray;
 
-            CvInvoke.NamedWindow("Video");
+            ImageViewer myView = new ImageViewer();
+            myView.Size = new Size(700, 700);
+            myView.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            myView.Show();
+//            CvInvoke.NamedWindow("Video");
 
             // Initialize video capture from the video file and check if it worked.
             try
             {
                 vidCap = new Capture(VidPath);
-                vidCap.ImageGrabbed += new EventHandler(ProcessFrame);
+                vidCap.ImageGrabbed += ProcessFrame;
                 totalFrames = vidCap.GetCaptureProperty(CapProp.FrameCount);
                 vidCap.Start();
                 Console.WriteLine("Started capture");
@@ -71,9 +79,13 @@ namespace ShaprCVTest
             {
                 lock (lockObject)
                 {
-                    if (frame != null) CvInvoke.Imshow("Video", frame);
+                    if (frame != null && frame.Width > 0)
+                    {
+                        myView.Image = frame;
+                        myView.Update();
+                    }
                 }
-                Thread.Sleep(500);
+//                Thread.Sleep(500);
             }
 
             vidCap.Stop();
@@ -81,33 +93,63 @@ namespace ShaprCVTest
             CvInvoke.DestroyAllWindows();
         }
 
-        static void ProcessFrame(object sender, EventArgs e)
+        private static void ProcessFrame(object sender, EventArgs args)
         {
-            Console.WriteLine("spawn");
             double curFrame = 0d;
-            Mat myInputFrame = null;
-
-            Capture _cap = (Capture) sender;
-
+            var myInputFrame = new Mat();
             Image<Bgr, byte> myOutputFrame = null;
-            lock (lockObject)
+
+//            Capture _cap = (Capture) sender;
+            try
             {
-                curFrame = _cap.GetCaptureProperty(CapProp.PosFrames);
-                myInputFrame = _cap.QueryFrame();
+                lock (lockObject)
+                {
+                    curFrame = vidCap.GetCaptureProperty(CapProp.PosFrames);
+                    vidCap.Retrieve(myInputFrame, 0);
+                }
+            }
+            catch(Exception e)
+            {
+                Console.Write("Error in threaded frame capture: ");
+                Console.WriteLine(e.Message);
+                StackTrace st = new StackTrace(e, true);
+                var frame = st.GetFrame(0);
+                var line = frame.GetFileLineNumber();
+                Console.WriteLine(line);
             }
 
-            if (myInputFrame.IsEmpty) return;
-
-            //process myFrame
-            myOutputFrame = DetectCups(myInputFrame);
-
-            lock (lockObject)
+            try
             {
-                if (curFrame > frameNum)
+                if (myInputFrame == null || myInputFrame.IsEmpty) return;
+
+                //process myFrame
+                myOutputFrame = DetectCups(myInputFrame);
+            }
+            catch (Exception e)
+            {
+                Console.Write("Error in threaded processing: ");
+                Console.WriteLine(e.Message);
+                var st = new StackTrace(e, true);
+                var frame = st.GetFrame(0);
+                var line = frame.GetFileLineNumber();
+                Console.WriteLine(line);
+            }
+            
+            try
+            {
+                lock (lockObject)
                 {
-                    frameNum = curFrame;
-                    frame = myOutputFrame;
+                    if (curFrame > frameNum)
+                    {
+                        frameNum = curFrame;
+                        frame = myOutputFrame;
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                Console.Write("Error in threaded frame update: ");
+                Console.WriteLine(e.Message);
             }
         }
 
