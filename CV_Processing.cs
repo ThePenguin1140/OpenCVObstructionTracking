@@ -376,7 +376,7 @@ namespace ShaprCVTest {
 
       //Causes a bit of lag between frames
       resized_image = resized_image.SmoothGaussian( 15 );
-      resized_image._GammaCorrect( 2.5 );
+//      resized_image._GammaCorrect( 1.5 );
       resized_image._EqualizeHist();
 
       resized_image = resized_image.Erode( 10 );
@@ -392,9 +392,13 @@ namespace ShaprCVTest {
     }
 
     public static Image<Gray, byte> FilterCups( Image<Hsv, byte> input, bool ShowFiltered ) {
-      ScalarArray lower = new ScalarArray( new Hsv( 0, 0, 0 ).MCvScalar );
-      ScalarArray upper = new ScalarArray( new Hsv( 35, 255, 255 ).MCvScalar );
+//      ScalarArray lower = new ScalarArray( new Hsv( 0, 0, 0 ).MCvScalar );
+//      ScalarArray upper = new ScalarArray( new Hsv( 35, 255, 255 ).MCvScalar );
+      
+      ScalarArray lower = new ScalarArray( new Hsv( 130, 0, 0 ).MCvScalar );
+      ScalarArray upper = new ScalarArray( new Hsv( 180, 200, 255 ).MCvScalar );
 
+      
       Image<Gray, byte> output = new Image<Gray, byte>( input.Size );
 
       CvInvoke.InRange( input, lower, upper, output );
