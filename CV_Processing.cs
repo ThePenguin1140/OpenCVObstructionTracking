@@ -55,7 +55,7 @@ namespace ShaprCVTest {
 
 		    if ( ( box.Width < 400 && box.Height < 400 ) &&
 			     ( box.Width > 50 && box.Height > 175 ) &&
-			     ( box.Height > box.Width && box.Location.Y > 100 ) && !HasParent( contour2, CvInvoke.BoundingRectangle( contours[i] ) ) )
+			     ( box.Height > box.Width && box.Location.Y > CV_Program.MinY ) && !HasParent( contour2, CvInvoke.BoundingRectangle( contours[i] ) ) )
            {
               tre2[t2id, 0] = tree[i, 0];
         			tre2[t2id, 1] = tree[i, 1];
@@ -199,6 +199,8 @@ namespace ShaprCVTest {
           if ( frame != null && CV_Program.TrackCups )
             CvInvoke.PutText( frame, "[" + ( CupNumsFound[i] + 1 ) + "]", new System.Drawing.Point( NewBoxes[i].Location.X + 5, NewBoxes[i].Location.Y - 10 ), FontFace.HersheyPlain, 1.25, new MCvScalar( 255, 0, 255 ), 2 );
         }
+        
+        if ( CV_Program.ShowMinYLine ) CvInvoke.PutText( frame, "__MinY_______________________________________________________________", new System.Drawing.Point( 0, CV_Program.MinY ), FontFace.HersheyPlain, 1.25, new MCvScalar( 255, 0, 255 ), 2 );
 
         /*
         foreach ( Rectangle box in boxes )

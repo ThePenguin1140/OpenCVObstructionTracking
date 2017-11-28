@@ -9,10 +9,12 @@ namespace ShaprCVTest
 {
   class CV_Program 
   {
-    public static bool      TrackCups = false;
-    public static CV_Cup[]  Cups             ;
-    public static bool ShowHSV  = false;
-    public static bool ShowFiltered = false;
+    public static bool       TrackCups    = false;
+    public static bool       ShowMinYLine = false;
+    public static CV_Cup[]   Cups                ;
+    public static bool       ShowHSV      = false;
+    public static bool       ShowFiltered = false;
+    public static int        MinY         = 100  ;
 
     public static void DetectCups_Image( string ImgPath = "..\\..\\Images\\Cups.jpg", bool ShowHSV = false, bool ShowGray = false) 
     {
@@ -91,6 +93,7 @@ namespace ShaprCVTest
             Console.WriteLine( "CV_Program: DetectCups_Video(): Key pressed: " + keyPressed );
           if ( keyPressed == 27 ) break;
           else if ( keyPressed == 116 ) InitCupTracking( frame );
+          else if ( keyPressed == 121 ) ShowMinYLine = true;
           else if ( keyPressed == 97 && nextFrame > 0 && paused ) {
             //prev 
             nextFrame -= 1;
@@ -159,6 +162,8 @@ namespace ShaprCVTest
         Console.WriteLine( "CV_Program: InitCupTracking(): [" + Cups[0].CupID + "] " + Cups[0].BoundingBox);
         Console.WriteLine( "CV_Program: InitCupTracking(): [" + Cups[1].CupID + "] " + Cups[1].BoundingBox);
         Console.WriteLine( "CV_Program: InitCupTracking(): [" + Cups[2].CupID + "] " + Cups[2].BoundingBox);
+
+        MinY = ((Cups[0].BoundingBox.Location.Y + Cups[1].BoundingBox.Location.Y + Cups[2].BoundingBox.Location.Y) / 3) - 50;
 
         TrackCups = true;
       }
