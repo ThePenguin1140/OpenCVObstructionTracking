@@ -378,8 +378,8 @@ namespace ShaprCVTest {
 
       //Causes a bit of lag between frames
       resized_image = resized_image.SmoothGaussian( 15 );
-//      resized_image._GammaCorrect( 1.5 );
-      resized_image._EqualizeHist();
+      resized_image._GammaCorrect( 2.5 );
+//      resized_image._EqualizeHist();
 
       resized_image = resized_image.Erode( 10 );
       resized_image = resized_image.Dilate( 10 );
@@ -394,21 +394,30 @@ namespace ShaprCVTest {
     }
 
     public static Image<Gray, byte> FilterCups( Image<Hsv, byte> input, bool ShowFiltered ) {
-//      ScalarArray lower = new ScalarArray( new Hsv( 0, 0, 0 ).MCvScalar );
-//      ScalarArray upper = new ScalarArray( new Hsv( 35, 255, 255 ).MCvScalar );
-      
-      ScalarArray lower = new ScalarArray( new Hsv( 130, 0, 0 ).MCvScalar );
-      ScalarArray upper = new ScalarArray( new Hsv( 180, 200, 255 ).MCvScalar );
+//      ScalarArray lower = new ScalarArray( new Hsv( 0, (255*0.5), 255 ).MCvScalar );
+//      ScalarArray upper = new ScalarArray( new Hsv( (180* ( 360 / 328) ), 255, (255*0.75) ).MCvScalar );
+//      
+//      ScalarArray lower = new ScalarArray( new Hsv( 130, 0, 0 ).MCvScalar );
+//      ScalarArray upper = new ScalarArray( new Hsv( 180, 200, 255 ).MCvScalar );
 
-      
-      Image<Gray, byte> output = new Image<Gray, byte>( input.Size );
+      ScalarArray lower = new ScalarArray( new Bgr( Color.Red ).MCvScalar );
+      ScalarArray upper = new ScalarArray( new Bgr( Color.Purple).MCvScalar);
 
-      CvInvoke.InRange( input, lower, upper, output );
+      Image<Gray, byte>[] channels = input.Split();
+
+      CvInvoke.InRange( channels[0], new ScalarArray(20), new ScalarArray(160), channels[0] );
+
+      channels[0]._Not();
+      channels[0]._ThresholdBinary( new Gray(10), new Gray(255.0));
+      CvInvoke.BitwiseAnd( channels[0], channels[1], channels[0], null);
 
       if ( ShowFiltered )
-        CvInvoke.Imshow( "Cup Filter", output );
+        CvInvoke.Imshow( "Cup Filter", channels[0] );
 
-      return output;
+//      CvInvoke.InRange( input, lower, upper, output );
+
+  
+      return channels[0];
     }
 
     public static Image<Gray, byte> FilterGlare( Image<Hsv, byte> input, bool ShowFiltered ) {
