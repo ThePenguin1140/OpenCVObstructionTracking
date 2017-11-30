@@ -15,6 +15,7 @@ namespace ShaprCVTest
     public static bool       ShowHSV      = false;
     public static bool       ShowFiltered = false;
     public static int        MinY         = 100  ;
+    public static float      MinWidth     = 100  ;
 
     public static void DetectCups_Image( string ImgPath = "..\\..\\Images\\Cups.jpg", bool ShowHSV = false, bool ShowGray = false) 
     {
@@ -163,10 +164,31 @@ namespace ShaprCVTest
         Console.WriteLine( "CV_Program: InitCupTracking(): [" + Cups[1].CupID + "] " + Cups[1].BoundingBox);
         Console.WriteLine( "CV_Program: InitCupTracking(): [" + Cups[2].CupID + "] " + Cups[2].BoundingBox);
 
-        MinY = ((Cups[0].BoundingBox.Location.Y + Cups[1].BoundingBox.Location.Y + Cups[2].BoundingBox.Location.Y) / 3) - 50;
+        MinY = ((Cups[0].BoundingBox.Location.Y + Cups[1].BoundingBox.Location.Y + Cups[2].BoundingBox.Location.Y) / 3) - 80;
+
+        float[] widths = new float[3];
+        widths[0] = (float) Cups[0].BoundingBox.Width;
+        widths[1] = (float) Cups[1].BoundingBox.Width;
+        widths[2] = (float) Cups[2].BoundingBox.Width;
+        
+        //MinWidth = ((float)Cups[0].BoundingBox.Width + (float)Cups[1].BoundingBox.Width + (float)Cups[2].BoundingBox.Width) / 3.0f;
+        MinWidth = getMaxWidth(widths);
+        MinWidth *= 1.3f;
 
         TrackCups = true;
       }
+    }
+
+    private static float getMaxWidth(float[] cupWidths)
+    {
+      float max = 0;
+
+      for (int i = 0; i < cupWidths.Length; i++)
+      {
+        if (cupWidths[i] > max) max = cupWidths[i];
+      }
+
+      return max;
     }
 
     private static void DrawContours( Image<Bgr, byte> output, VectorOfVectorOfPoint contours, Mat frame = null ) {

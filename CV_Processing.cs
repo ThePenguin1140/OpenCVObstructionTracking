@@ -66,7 +66,7 @@ namespace ShaprCVTest {
               {
                 BoxSplits.Add( 3 );
               } 
-              else if ( (float)box.Width / (float)box.Height > 0.55f )
+              else if ( (float)box.Width / (float)box.Height > 0.55f || (float)box.Width >= CV_Program.MinWidth)
               {
                 BoxSplits.Add( 2 );
               } 
