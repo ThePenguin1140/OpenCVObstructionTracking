@@ -91,7 +91,7 @@ namespace ShaprCVTest
         if ( keyPressed != -1 && keyPressed != 255 ) {
             // Only the least-significant 16 bits contain the actual key code. The other bits contain modifier key states
             keyPressed &= 0xFFFF;
-            Console.WriteLine( "CV_Program: DetectCups_Video(): Key pressed: " + keyPressed );
+//            Console.WriteLine( "CV_Program: DetectCups_Video(): Key pressed: " + keyPressed );
           if ( keyPressed == 27 ) break;
           else if ( keyPressed == 116 ) InitCupTracking( frame );
           else if ( keyPressed == 121 ) ShowMinYLine = true;
@@ -121,7 +121,7 @@ namespace ShaprCVTest
       //denoise, smoothe and threshold
       filtered_image = PreProcessing.FilterCups( preprocessed_image, ShowFiltered );
 
-      PreProcessing.FilterGlare( preprocessed_image, ShowFiltered );
+      //PreProcessing.FilterGlare( preprocessed_image, ShowFiltered );
 
     	Image<Bgr, byte> output_image = new Image<Bgr, byte>( input_image.Size );
     	output_image = input_image.ToImage<Bgr, byte>();
