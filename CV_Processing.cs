@@ -354,16 +354,17 @@ namespace ShaprCVTest {
             }
           }
         }
-
-        if ( !found[0] ) CV_Program.Cups[0].BoundingBox = new Rectangle( CV_Program.Cups[0].BoundingBox.X, 9000, 
+        
+        if ( !found[0] ) CV_Program.Cups[0].BoundingBox = new Rectangle( CV_Program.Cups[0].BoundingBox.X, 9000 + CV_Program.Cups[0].BoundingBox.Y, 
                                                                          CV_Program.Cups[0].BoundingBox.Width, 
                                                                          CV_Program.Cups[0].BoundingBox.Height);
-        if ( !found[1] ) CV_Program.Cups[1].BoundingBox = new Rectangle( CV_Program.Cups[1].BoundingBox.X, 9000, 
+        if ( !found[1] ) CV_Program.Cups[1].BoundingBox = new Rectangle( CV_Program.Cups[1].BoundingBox.X, 9000 + CV_Program.Cups[1].BoundingBox.Y, 
                                                                          CV_Program.Cups[1].BoundingBox.Width,
                                                                          CV_Program.Cups[1].BoundingBox.Height);
-        if ( !found[2] ) CV_Program.Cups[2].BoundingBox = new Rectangle( CV_Program.Cups[2].BoundingBox.X, 9000,  
+        if ( !found[2] ) CV_Program.Cups[2].BoundingBox = new Rectangle( CV_Program.Cups[2].BoundingBox.X, 9000 + CV_Program.Cups[2].BoundingBox.Y,  
                                                                          CV_Program.Cups[2].BoundingBox.Width,
                                                                          CV_Program.Cups[2].BoundingBox.Height);
+        
       }
     }
 
