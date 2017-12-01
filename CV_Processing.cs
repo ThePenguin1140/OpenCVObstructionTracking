@@ -117,6 +117,13 @@ namespace ShaprCVTest {
         {
           if ( (int)BoxSplits[i] == 1 || contours.Size >= 3 )
           {
+            if (CV_Program.TrackCups && box.Height > CV_Program.MinHeight)
+            {
+              int diff = box.Height - (int) CV_Program.MinHeight;
+              box.Height = (int)CV_Program.MinHeight;
+              box.Y += diff;
+            }
+            
             output.Draw( box, bgrRed, 2 );
 
             boxesFound.Add( box );
@@ -376,16 +383,31 @@ namespace ShaprCVTest {
           }
         }
         
-        if ( !found[0] ) CV_Program.Cups[0].BoundingBox = new Rectangle( CV_Program.Cups[0].BoundingBox.X, 9000 + CV_Program.Cups[0].BoundingBox.Y, 
+        if ( !found[0] ) CV_Program.Cups[0].BoundingBox = new Rectangle( CV_Program.Cups[0].BoundingBox.X, GetNewYForMissingBox(0), 
                                                                          CV_Program.Cups[0].BoundingBox.Width, 
                                                                          CV_Program.Cups[0].BoundingBox.Height);
-        if ( !found[1] ) CV_Program.Cups[1].BoundingBox = new Rectangle( CV_Program.Cups[1].BoundingBox.X, 9000 + CV_Program.Cups[1].BoundingBox.Y, 
+        if ( !found[1] ) CV_Program.Cups[1].BoundingBox = new Rectangle( CV_Program.Cups[1].BoundingBox.X, GetNewYForMissingBox(1), 
                                                                          CV_Program.Cups[1].BoundingBox.Width,
                                                                          CV_Program.Cups[1].BoundingBox.Height);
-        if ( !found[2] ) CV_Program.Cups[2].BoundingBox = new Rectangle( CV_Program.Cups[2].BoundingBox.X, 9000 + CV_Program.Cups[2].BoundingBox.Y,  
+        if ( !found[2] ) CV_Program.Cups[2].BoundingBox = new Rectangle( CV_Program.Cups[2].BoundingBox.X, GetNewYForMissingBox(2),  
                                                                          CV_Program.Cups[2].BoundingBox.Width,
                                                                          CV_Program.Cups[2].BoundingBox.Height);
         
+      }
+    }
+
+    //Checks the Y location value of a bounding box
+    //If it's divisible by 800, that means it was already moved up and we add another 800 to it
+    //Else, it only just disappeared, so we set it to 800
+    private static int GetNewYForMissingBox(int id)
+    {
+      if (CV_Program.Cups[id].BoundingBox.Y % 800 == 0)
+      {
+        return CV_Program.Cups[id].BoundingBox.Y + 800;
+      }
+      else
+      {
+        return 800;
       }
     }
 

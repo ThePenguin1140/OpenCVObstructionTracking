@@ -16,6 +16,7 @@ namespace ShaprCVTest
     public static bool       ShowFiltered = false;
     public static int        MinY         = 100  ;
     public static float      MinWidth     = 100  ;
+    public static float      MinHeight    = 100  ;
 
     public static void DetectCups_Image( string ImgPath = "..\\..\\Images\\Cups.jpg", bool ShowHSV = false, bool ShowGray = false) 
     {
@@ -171,21 +172,28 @@ namespace ShaprCVTest
         widths[1] = (float) Cups[1].BoundingBox.Width;
         widths[2] = (float) Cups[2].BoundingBox.Width;
         
-        //MinWidth = ((float)Cups[0].BoundingBox.Width + (float)Cups[1].BoundingBox.Width + (float)Cups[2].BoundingBox.Width) / 3.0f;
-        MinWidth = getMaxWidth(widths);
+        float[] heights = new float[3];
+        heights[0] = (float) Cups[0].BoundingBox.Height;
+        heights[1] = (float) Cups[1].BoundingBox.Height;
+        heights[2] = (float) Cups[2].BoundingBox.Height;
+        
+        MinWidth = getMaxWidthOrHeight(widths);
         MinWidth *= 1.3f;
+        
+        MinHeight = getMaxWidthOrHeight(heights);
+        MinHeight *= 1.05f;
 
         TrackCups = true;
       }
     }
 
-    private static float getMaxWidth(float[] cupWidths)
+    private static float getMaxWidthOrHeight(float[] cupLengths)
     {
       float max = 0;
 
-      for (int i = 0; i < cupWidths.Length; i++)
+      for (int i = 0; i < cupLengths.Length; i++)
       {
-        if (cupWidths[i] > max) max = cupWidths[i];
+        if (cupLengths[i] > max) max = cupLengths[i];
       }
 
       return max;
