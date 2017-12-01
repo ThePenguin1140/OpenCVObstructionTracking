@@ -135,8 +135,29 @@ namespace ShaprCVTest {
           }
           else if ( (int)BoxSplits[i] == 2 )
           {
+            //Code for splitting in half only
             Rectangle box1 = new Rectangle( box.X - 1, box.Y, box.Width / 2, box.Height );
             Rectangle box2 = new Rectangle( box.X + ( box.Width / 2 ) + 1, box.Y, box.Width / 2, box.Height );
+            
+            //We need to split this box
+            //ClosestOldBox is the box from the previous frame that is closet to this one being split now
+            Rectangle ClosestOldBox = GetClosestOldCupBoundingBox(box);
+
+            //So, if the old box and the new one start at a similar place
+            //We will generate the first half to be as wide as the previous frame
+            //otherwise, we generate the first half to be the difference between the old box and the new bigger one
+            //this way, we don't simply split in half
+            if (ClosestOldBox.X < box.X + 2 && ClosestOldBox.X > box.X + 2)
+            {
+              box1 = new Rectangle(box.X -1, box.Y, ClosestOldBox.Width, box.Height);
+              box2 = new Rectangle(box.X + box1.Width + 1, box.Y, box.Width - ClosestOldBox.Width, box.Height );
+            }
+            else
+            {
+              box1 = new Rectangle(box.X - 1, box.Y, box.Width - ClosestOldBox.Width, box.Height );
+              box2 = new Rectangle(box.X + box1.Width + 1, box.Y, ClosestOldBox.Width, box.Height);
+            }
+            
 
             output.Draw( box1, bgrRed, 2 );
             output.Draw( box2, bgrRed, 2 );
@@ -170,6 +191,25 @@ namespace ShaprCVTest {
 
       if ( contours.Size != 0 ) ReLabelCups( boxesFound, frame );
       if ( contours.Size != 0 ) UpdateCupTracking();
+    }
+
+    public static Rectangle GetClosestOldCupBoundingBox(Rectangle BoxBeingChecked)
+    {
+      float dist = GetDistance(CV_Program.Cups[0].BoundingBox, BoxBeingChecked);
+      Rectangle ClosestOldBox = CV_Program.Cups[0].BoundingBox;
+      
+      for (int i = 1; i < 3; i++)
+      {
+        float newDist = GetDistance(CV_Program.Cups[i].BoundingBox, BoxBeingChecked);
+        
+        if (newDist < dist)
+        {
+          dist = newDist;
+          ClosestOldBox = CV_Program.Cups[i].BoundingBox;
+        }
+      }
+      
+      return ClosestOldBox;
     }
 
     public static void ReLabelCups( ArrayList boxes, Mat frame)
