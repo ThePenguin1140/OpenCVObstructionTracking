@@ -5,6 +5,7 @@ using Emgu.CV.Structure;
 using Emgu.CV.Util;
 using System.Drawing;
 using System.Collections;
+using System.Windows.Forms;
 
 namespace ShaprCVTest {
   class PreProcessing {
@@ -38,11 +39,17 @@ namespace ShaprCVTest {
       BoxSplits = new ArrayList();
 
 
-      Image<Gray, float> laplace_image = input.Laplace( 3 );
-      Image<Gray, float> erode_image = laplace_image.Erode( 2 );
-      Image<Gray, byte> byteErode_image = erode_image.Convert<Gray, byte>();
-      Image<Gray, byte> thresholded_image = byteErode_image.ThresholdToZero( new Gray( 240 ) );
-      Image<Gray, byte> erode2_image = thresholded_image.Erode( 3 );
+      Image<Gray, byte> laplace_image = input.Canny(150, 50);
+      Image<Gray, byte> erode_image = laplace_image.Dilate( 3 );
+      Image<Gray, byte> thresholded_image = erode_image.ThresholdToZero( new Gray( 240 ) );
+      thresholded_image = thresholded_image.SmoothGaussian(7);
+      Image<Gray, byte> erode2_image = thresholded_image.Erode( 5 );
+      
+      
+      CvInvoke.Imshow("laplace", laplace_image);
+      CvInvoke.Imshow("thresh", thresholded_image);
+      CvInvoke.Imshow("erode2", erode2_image);
+      
 
       int[,] tree = CvInvoke.FindContourTree( erode2_image, contours, ChainApproxMethod.ChainApproxSimple );
       int[,] tre2 = new int[tree.Length / 4, 4];
@@ -55,8 +62,10 @@ namespace ShaprCVTest {
 
 		    if ( ( box.Width < 400 && box.Height < 400 ) &&
 			     ( box.Width > 50 && box.Height > 175 ) &&
-			     ( box.Height > box.Width && box.Location.Y > CV_Program.MinY ) && !HasParent( contour2, CvInvoke.BoundingRectangle( contours[i] ) ) )
-           {
+			     ( box.Height > box.Width && box.Location.Y > CV_Program.MinY ) 
+		         && !HasParent( contour2, CvInvoke.BoundingRectangle( contours[i] ) ) 
+		         )
+        {
               tre2[t2id, 0] = tree[i, 0];
         			tre2[t2id, 1] = tree[i, 1];
         			tre2[t2id, 2] = tree[i, 2];
@@ -106,7 +115,7 @@ namespace ShaprCVTest {
 
         if ( true || GetMinDistance( box ) < 150 )
         {
-          if ( (int)BoxSplits[i] == 1 )
+          if ( (int)BoxSplits[i] == 1 || contours.Size >= 3 )
           {
             output.Draw( box, bgrRed, 2 );
 
@@ -158,17 +167,26 @@ namespace ShaprCVTest {
           Rectangle correctBB = new Rectangle();
           int id = -2;
 
-          foreach ( CV_Cup oldCup in prevCups )
+          /*
+           * Compares previous frame to current frame.
+           * A bounding box is assigned to the cup with the smallest 
+           * euclidian distance between it's bounding boxes.
+           */
+          foreach ( CV_Cup oldCup in prevCups ) //previous frame
           {
-            foreach ( Rectangle box in boxes )
+            if ( !IsIn( oldCup.CupID ) )
             {
-              float newDist = GetDistance( box, oldCup.BoundingBox );
-
-              if ( newDist<d && newDist< 100 && !IsIn(oldCup.CupID))
+              foreach ( Rectangle box in boxes ) //current frame
               {
-                d = newDist;
-                correctBB = box;
-                id = oldCup.CupID;
+                float newDist = GetDistance( box, oldCup.BoundingBox );
+  
+//                if ( newDist < d && newDist < 100)
+                if( newDist < d )
+                {
+                  d = newDist;
+                  correctBB = box;
+                  id = oldCup.CupID;
+                }
               }
             }
           }
@@ -182,6 +200,9 @@ namespace ShaprCVTest {
           }
         }
 
+        /*
+         * If we have fewer than 3 cups check which box is missing. 
+         */
         if ( CNF_i < 3 && boxes.Count > 0)
         {
           int missing = WhichCupIsMissing();
