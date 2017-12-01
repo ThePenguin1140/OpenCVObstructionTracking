@@ -104,6 +104,7 @@ namespace ShaprCVTest {
 
     public static void DrawContours( Image<Bgr, byte> output, VectorOfVectorOfPoint contours, Mat frame = null ) {
       Bgr bgrRed = new Bgr( Color.Red );
+      Bgr bgrBlu = new Bgr( Color.Blue );
 
       ResetCupsFound();
 
@@ -124,7 +125,11 @@ namespace ShaprCVTest {
               box.Y += diff;
             }
             
+            //Draw the Box
             output.Draw( box, bgrRed, 2 );
+            
+            //Draw Center
+            output.Draw(new Rectangle(Center(box).X, Center(box).Y, 2, 2), bgrBlu, 2);
 
             boxesFound.Add( box );
           }
@@ -135,6 +140,9 @@ namespace ShaprCVTest {
 
             output.Draw( box1, bgrRed, 2 );
             output.Draw( box2, bgrRed, 2 );
+            
+            output.Draw(new Rectangle(Center(box1).X, Center(box1).Y, 2, 2), bgrBlu, 2);
+            output.Draw(new Rectangle(Center(box2).X, Center(box2).Y, 2, 2), bgrBlu, 2);
 
             boxesFound.Add( box1 );
             boxesFound.Add( box2 );
@@ -148,6 +156,10 @@ namespace ShaprCVTest {
             output.Draw( box1, bgrRed, 2 );
             output.Draw( box2, bgrRed, 2 );
             output.Draw( box3, bgrRed, 2 );
+            
+            output.Draw(new Rectangle(Center(box1).X, Center(box1).Y, 2, 2), bgrBlu, 2);
+            output.Draw(new Rectangle(Center(box2).X, Center(box2).Y, 2, 2), bgrBlu, 2);
+            output.Draw(new Rectangle(Center(box3).X, Center(box3).Y, 2, 2), bgrBlu, 2);
 
             boxesFound.Add( box1 );
             boxesFound.Add( box2 );
