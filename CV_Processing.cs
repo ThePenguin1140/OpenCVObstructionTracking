@@ -431,6 +431,7 @@ namespace ShaprCVTest {
             if ( CupNumsFound[i] == j ) { 
               CV_Program.Cups[j].BoundingBox = NewBoxes[i];
               found[j] = true;
+              CV_Program.Cups[j].Missing = false;
             }
           }
         }
@@ -453,6 +454,11 @@ namespace ShaprCVTest {
     //Else, it only just disappeared, so we set it to 800
     private static int GetNewYForMissingBox(int id)
     {
+      if (!CV_Program.Cups[id].Missing)
+      {
+        CV_Program.Cups[id].Missing = true;
+        return CV_Program.Cups[id].BoundingBox.Y;
+      }
       if (CV_Program.Cups[id].BoundingBox.Y % 800 == 0)
       {
         return CV_Program.Cups[id].BoundingBox.Y + 800;

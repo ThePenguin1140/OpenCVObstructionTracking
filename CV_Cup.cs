@@ -5,7 +5,8 @@ namespace ShaprCVTest
 {
   public class CV_Cup
   {
-    public int        CupID  = -1;
+    public int        CupID    = -1;
+    public bool       Missing  = false;
     public Rectangle  BoundingBox;
 
     public void Init(int ID, Rectangle Box)
