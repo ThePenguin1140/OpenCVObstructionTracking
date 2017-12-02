@@ -122,24 +122,39 @@ namespace ShaprCVTest {
           {
             if (CV_Program.TrackCups && box.Height > CV_Program.MinHeight)
             {
+              Rectangle box2 = new Rectangle( box.X, box.Y, box.Width, (int) (CV_Program.AvgHeight * 0.85f) );
+              
               int diff = box.Height - (int) CV_Program.MinHeight;
               box.Height = (int)CV_Program.MinHeight;
               box.Y += diff;
-            }
+              
+              Rectangle box1 = new Rectangle( box.X, box.Y, box.Width, box.Height );
+              
+              output.Draw( box1, bgrRed, 2 );
+              output.Draw( box2, bgrRed, 2 );
             
-            //Draw the Box
-            output.Draw( box, bgrRed, 2 );
-            
-            //Draw Center
-            output.Draw(new Rectangle(Center(box).X, Center(box).Y, 2, 2), bgrBlu, 2);
+              output.Draw(new Rectangle(Center(box1).X, Center(box1).Y, 2, 2), bgrBlu, 2);
+              output.Draw(new Rectangle(Center(box2).X, Center(box2).Y, 2, 2), bgrBlu, 2);
 
-            boxesFound.Add( box );
+              boxesFound.Add( box1 );
+              boxesFound.Add( box2 );
+            }
+            else
+            {
+              //Draw the Box
+              output.Draw( box, bgrRed, 2 );
+            
+              //Draw Center
+              output.Draw(new Rectangle(Center(box).X, Center(box).Y, 2, 2), bgrBlu, 2);
+
+              boxesFound.Add( box );
+            }
           }
           else if ( (int)BoxSplits[i] == 2 )
           {
             //Code for splitting in half only
-            Rectangle box1 = new Rectangle( box.X - 1, box.Y, box.Width / 2, box.Height );
-            Rectangle box2 = new Rectangle( box.X + ( box.Width / 2 ) + 1, box.Y, box.Width / 2, box.Height );
+            Rectangle box1 = new Rectangle( box.X - 9, box.Y, box.Width / 2, box.Height );
+            Rectangle box2 = new Rectangle( box.X + ( box.Width / 2 ) + 9, box.Y, box.Width / 2, box.Height );
             
             //We need to split this box
             //ClosestOldBox is the box from the previous frame that is closet to this one being split now
