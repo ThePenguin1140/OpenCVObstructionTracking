@@ -147,7 +147,7 @@ namespace ShaprCVTest {
             //We will generate the first half to be as wide as the previous frame
             //otherwise, we generate the first half to be the difference between the old box and the new bigger one
             //this way, we don't simply split in half
-            if (ClosestOldBox.X < box.X + 2 && ClosestOldBox.X > box.X + 2)
+            if (ClosestOldBox.X < (box.X + 10) && ClosestOldBox.X > (box.X - 10))
             {
               box1 = new Rectangle(box.X -1, box.Y, ClosestOldBox.Width, box.Height);
               box2 = new Rectangle(box.X + box1.Width + 1, box.Y, box.Width - ClosestOldBox.Width, box.Height );
