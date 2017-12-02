@@ -153,7 +153,7 @@ namespace ShaprCVTest {
             {
               box1 = new Rectangle(box.X -1, ClosestOldBox.Y, ClosestOldBox.Width, ClosestOldBox.Height);
               //box2 = new Rectangle(box.X + box1.Width + 1, box.Y, box.Width - ClosestOldBox.Width, box.Height );
-              box2 = new Rectangle((box.X + box.Width + 1)-(int)CV_Program.AvgWidth, box.Y, (int)CV_Program.AvgWidth, (int)CV_Program.AvgHeight );
+              box2 = new Rectangle((box.X + box.Width + 1)-(int)CV_Program.AvgWidth, GetClosestOldCupBoundingBox(box2).Y, (int)CV_Program.AvgWidth, (int)CV_Program.AvgHeight );
             }
             else
             {
