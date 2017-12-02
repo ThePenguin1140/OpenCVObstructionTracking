@@ -554,5 +554,17 @@ namespace ShaprCVTest {
       return output;
     }
 
+    /*
+     * Takes an input matrix and a region of interest in the matrix.
+     * Calculates the side on which the top cup is in this ROI.
+     * -1 is left
+     * 0 is none
+     * 1 is right
+     */
+    public static int MovementDirection( Mat inputImage, Rectangle ROI )
+    {
+      
+      return 0;
+    }
   }
 }
