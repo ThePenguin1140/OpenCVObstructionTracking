@@ -143,7 +143,7 @@ namespace ShaprCVTest {
             
             //We need to split this box
             //ClosestOldBox is the box from the previous frame that is closet to this one being split now
-            Rectangle ClosestOldBox = GetClosestOldCupBoundingBox(box);
+            Rectangle ClosestOldBox = GetClosestOldCupBoundingBox(box1);
 
             //So, if the old box and the new one start at a similar place
             //We will generate the first half to be as wide as the previous frame
