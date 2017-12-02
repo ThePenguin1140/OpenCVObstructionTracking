@@ -123,33 +123,18 @@ namespace ShaprCVTest {
           {
             if (CV_Program.TrackCups && box.Height > CV_Program.MinHeight)
             {
-              Rectangle box2 = new Rectangle( box.X, box.Y, box.Width, (int) (CV_Program.AvgHeight * 0.85f) );
-              
               int diff = box.Height - (int) CV_Program.MinHeight;
               box.Height = (int)CV_Program.MinHeight;
               box.Y += diff;
-              
-              Rectangle box1 = new Rectangle( box.X, box.Y, box.Width, box.Height );
-              
-              output.Draw( box1, bgrRed, 2 );
-              output.Draw( box2, bgrRed, 2 );
-            
-              output.Draw(new Rectangle(Center(box1).X, Center(box1).Y, 2, 2), bgrBlu, 2);
-              output.Draw(new Rectangle(Center(box2).X, Center(box2).Y, 2, 2), bgrBlu, 2);
-
-              boxesFound.Add( box1 );
-              boxesFound.Add( box2 );
             }
-            else
-            {
-              //Draw the Box
-              output.Draw( box, bgrRed, 2 );
             
-              //Draw Center
-              output.Draw(new Rectangle(Center(box).X, Center(box).Y, 2, 2), bgrBlu, 2);
+            //Draw the Box
+            output.Draw( box, bgrRed, 2 );
+          
+            //Draw Center
+            output.Draw(new Rectangle(Center(box).X, Center(box).Y, 2, 2), bgrBlu, 2);
 
-              boxesFound.Add( box );
-            }
+            boxesFound.Add( box );
           }
           else if ( (int)BoxSplits[i] == 2 )
           {
@@ -165,16 +150,8 @@ namespace ShaprCVTest {
             //We will generate the first half to be as wide as the previous frame
             //otherwise, we generate the first half to be the difference between the old box and the new bigger one
             //this way, we don't simply split in half
-            if (ClosestOldBox.X < (box.X + 10) && ClosestOldBox.X > (box.X - 10) && (ClosestOldBox.X + ClosestOldBox.Width) < (box.X + box.Width + 10) && (ClosestOldBox.X + ClosestOldBox.Width)> (box.X + box.Width - 10))
-            {
-              box1 = new Rectangle((box.X + (box.Width-ClosestOldBox.Width)) + 1, ClosestOldBox.Y, ClosestOldBox.Width, ClosestOldBox.Height);
-
-              int box2Y = GetClosestOldCupBoundingBox(box2).Y;
-              if (box2Y == box1.Y) box2Y = box.Y;
-              
-              box2 = new Rectangle((box.X - 1), box2Y, (int)CV_Program.AvgWidth, (int)CV_Program.AvgHeight );
-            }
-            else if (ClosestOldBox.X < (box.X + 10) && ClosestOldBox.X > (box.X - 10))
+            
+            if (ClosestOldBox.X < (box.X + 10) && ClosestOldBox.X > (box.X - 10))
             {
               //Console.WriteLine("FIRST 1 1 1 1 1");
               box1 = new Rectangle(box.X - 1, ClosestOldBox.Y, ClosestOldBox.Width, ClosestOldBox.Height);

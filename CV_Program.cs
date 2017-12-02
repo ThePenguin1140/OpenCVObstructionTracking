@@ -183,7 +183,7 @@ namespace ShaprCVTest
         MinWidth *= 1.3f;
         
         MinHeight = getMaxWidthOrHeight(heights);
-        MinHeight *= 1.15f;
+        MinHeight *= 1.10f;
         
         AvgHeight = (Cups[0].BoundingBox.Height + Cups[1].BoundingBox.Height + Cups[2].BoundingBox.Height) / 3.0f;
         AvgWidth  = (Cups[0].BoundingBox.Width  + Cups[1].BoundingBox.Width  + Cups[2].BoundingBox.Width ) / 3.0f;
