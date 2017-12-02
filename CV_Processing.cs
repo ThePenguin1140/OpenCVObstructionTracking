@@ -5,6 +5,7 @@ using Emgu.CV.Structure;
 using Emgu.CV.Util;
 using System.Drawing;
 using System.Collections;
+using System.Diagnostics;
 using System.Windows.Forms;
 
 namespace ShaprCVTest {
@@ -148,15 +149,17 @@ namespace ShaprCVTest {
             //We will generate the first half to be as wide as the previous frame
             //otherwise, we generate the first half to be the difference between the old box and the new bigger one
             //this way, we don't simply split in half
-            if (ClosestOldBox.X < (box.X + 10) && ClosestOldBox.X > (box.X - 10))
+            if (ClosestOldBox.X < (box.X + 20) && ClosestOldBox.X > (box.X - 20))
             {
-              box1 = new Rectangle(box.X -1, box.Y, ClosestOldBox.Width, box.Height);
-              box2 = new Rectangle(box.X + box1.Width + 1, box.Y, box.Width - ClosestOldBox.Width, box.Height );
+              box1 = new Rectangle(box.X -1, ClosestOldBox.Y, ClosestOldBox.Width, ClosestOldBox.Height);
+              //box2 = new Rectangle(box.X + box1.Width + 1, box.Y, box.Width - ClosestOldBox.Width, box.Height );
+              box2 = new Rectangle((box.X + box.Width + 1)-(int)CV_Program.AvgWidth, box.Y, (int)CV_Program.AvgWidth, (int)CV_Program.AvgHeight );
             }
             else
             {
-              box1 = new Rectangle(box.X - 1, box.Y, box.Width - ClosestOldBox.Width, box.Height );
-              box2 = new Rectangle(box.X + box1.Width + 1, box.Y, ClosestOldBox.Width, box.Height);
+              //box1 = new Rectangle(box.X - 1, box.Y, box.Width - ClosestOldBox.Width, box.Height );
+              box1 = new Rectangle(box.X - 1, GetClosestOldCupBoundingBox(box1).Y, (int)CV_Program.AvgWidth, (int)CV_Program.AvgHeight );
+              box2 = new Rectangle(box.X + box1.Width + 1, ClosestOldBox.Y, ClosestOldBox.Width, ClosestOldBox.Height);
             }
             
 

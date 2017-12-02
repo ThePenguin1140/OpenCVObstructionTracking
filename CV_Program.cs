@@ -17,6 +17,8 @@ namespace ShaprCVTest
     public static int        MinY         = 100  ;
     public static float      MinWidth     = 100  ;
     public static float      MinHeight    = 100  ;
+    public static float      AvgHeight    = 100  ;
+    public static float      AvgWidth     = 100  ;
 
     public static void DetectCups_Image( string ImgPath = "..\\..\\Images\\Cups.jpg", bool ShowHSV = false, bool ShowGray = false) 
     {
@@ -182,6 +184,9 @@ namespace ShaprCVTest
         
         MinHeight = getMaxWidthOrHeight(heights);
         MinHeight *= 1.05f;
+        
+        AvgHeight = (Cups[0].BoundingBox.Height + Cups[1].BoundingBox.Height + Cups[2].BoundingBox.Height) / 3.0f;
+        AvgWidth  = (Cups[0].BoundingBox.Width  + Cups[1].BoundingBox.Width  + Cups[2].BoundingBox.Width ) / 3.0f;
 
         TrackCups = true;
       }
