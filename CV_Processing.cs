@@ -62,6 +62,7 @@ namespace ShaprCVTest {
 
 		    if ( ( box.Width < 400 && box.Height < 400 ) &&
 			     ( box.Width > 50 && box.Height > 175 ) &&
+			     ( box.Width > 50 && box.Height > 50 ) &&
 			     ( box.Height > box.Width && box.Location.Y > CV_Program.MinY ) 
 		         && !HasParent( contour2, CvInvoke.BoundingRectangle( contours[i] ) ) 
 		         )
