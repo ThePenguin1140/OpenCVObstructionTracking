@@ -44,6 +44,7 @@ namespace ShaprCVTest {
       Image<Gray, byte> thresholded_image = erode_image.ThresholdToZero( new Gray( 240 ) );
       thresholded_image = thresholded_image.SmoothGaussian(7);
       Image<Gray, byte> erode2_image = thresholded_image.Erode( 5 );
+      erode2_image._ThresholdBinary( new Gray( 0 ), new Gray( 255 ));
       
       
       CvInvoke.Imshow("laplace", laplace_image);
@@ -61,7 +62,6 @@ namespace ShaprCVTest {
         Rectangle box = CvInvoke.BoundingRectangle( contours[i] );
 
 		    if ( ( box.Width < 400 && box.Height < 400 ) &&
-			     ( box.Width > 50 && box.Height > 175 ) &&
 			     ( box.Width > 50 && box.Height > 50 ) &&
 			     ( box.Height > box.Width && box.Location.Y > CV_Program.MinY ) 
 		         && !HasParent( contour2, CvInvoke.BoundingRectangle( contours[i] ) ) 
@@ -511,15 +511,16 @@ namespace ShaprCVTest {
       CvInvoke.InRange( channels[0], new ScalarArray(20), new ScalarArray(160), channels[0] );
 
       channels[0]._Not();
-      channels[0]._ThresholdBinary( new Gray(10), new Gray(255.0));
+//      channels[0]._ThresholdBinary( new Gray(200), new Gray(255.0));
       CvInvoke.BitwiseAnd( channels[0], channels[1], channels[0], null);
 
+      channels[0]._ThresholdToZero( new Gray( 150 ) );
+      
       if ( ShowFiltered )
         CvInvoke.Imshow( "Cup Filter", channels[0] );
 
 //      CvInvoke.InRange( input, lower, upper, output );
 
-  
       return channels[0];
     }
 
