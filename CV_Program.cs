@@ -4,12 +4,8 @@ using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
 using Emgu.CV.Util;
 using System.Drawing;
-using System.Drawing.Text;
-using System.Net.Mime;
-using System.Threading;
 using System.Windows.Forms;
 using Emgu.CV.UI;
-using OpenTK.Graphics.OpenGL4;
 
 namespace ShaprCVTest 
 {
