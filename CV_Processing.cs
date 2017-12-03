@@ -616,7 +616,7 @@ namespace ShaprCVTest {
      */
     public static int MovementDirection( Image<Gray, byte> inputImage, Rectangle ROI )
     {
-      int offset = 50;
+      int offset = 20;
       int direction = 0;
       bool debug = false;
       bool[] corners = new bool[4]; //top left, top right, bottom left, bottom right
@@ -635,8 +635,10 @@ namespace ShaprCVTest {
       inputImage.ROI = ROI;
       inputImage._Not();
       
+      inputImage._Erode(5);
+      
       if (debug)
-    {
+      {  
         debuggingImage = new Image<Bgr, byte>( ROI.Size );
         CvInvoke.CvtColor(inputImage, debuggingImage, ColorConversion.Gray2Bgr);
       }
@@ -645,14 +647,14 @@ namespace ShaprCVTest {
       VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint();
       ExtractContours(inputImage, contours);
 
-      if (contours.Size < 2) return direction;
+      if (contours.Size < 2 || contours.Size > 3 ) return direction;
       
       for (int i = 0; i < contours.Size; i++)
       {
         Rectangle boundingBox = CvInvoke.BoundingRectangle(contours[i]);
 
         //make sure it's not the whole image
-        if( boundingBox.Width == ROI.Width && boundingBox.Height == ROI.Height ) continue;
+        if( boundingBox.Width + 1 == ROI.Width || boundingBox.Height + 1 == ROI.Height ) continue;
 
         if (boundingBox.X == 1 && boundingBox.Y == 1) corners[0] = true;
         else if (boundingBox.Y == 1 && boundingBox.Right + 1 == ROI.Width) corners[1] = true;
@@ -669,10 +671,16 @@ namespace ShaprCVTest {
       {
         CvInvoke.Imshow("ROI", debuggingImage);
         CvInvoke.WaitKey(0);
+        CvInvoke.DestroyWindow("ROI");
       }
 
-      if (corners[0] && corners[3]) direction = 1;
-      else if (corners[1] && corners[2]) direction = -1;
+      if (corners[0] || corners[3]) direction = 1;
+      else if (corners[1] || corners[2]) direction = -1;
+
+      if (    corners[0] && corners[1] 
+           || corners[2] && corners[3]
+           || corners[0] && corners[2]
+           || corners[1] && corners[3] ) direction = 0;
       
       return direction;
     }
