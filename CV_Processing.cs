@@ -44,9 +44,9 @@ namespace ShaprCVTest {
       erode2_image._ThresholdBinary( new Gray( 0 ), new Gray( 255 ));
       
       
-      CvInvoke.Imshow("laplace", laplace_image);
-      CvInvoke.Imshow("thresh", thresholded_image);
-      CvInvoke.Imshow("erode2", erode2_image);
+//      CvInvoke.Imshow("laplace", laplace_image);
+//      CvInvoke.Imshow("thresh", thresholded_image);
+//      CvInvoke.Imshow("erode2", erode2_image);
       
 
       return CvInvoke.FindContourTree( erode2_image, output, ChainApproxMethod.ChainApproxSimple );
