@@ -34,13 +34,8 @@ namespace ShaprCVTest {
       return false;
     }
 
-    public static VectorOfVectorOfPoint GetContours( Image<Gray, byte> input ) {
-      VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint();
-      VectorOfVectorOfPoint contour2 = new VectorOfVectorOfPoint();
-
-      BoxSplits = new ArrayList();
-
-
+    private static int[,] ExtractContours( Image<Gray, byte> input, VectorOfVectorOfPoint output )
+    {
       Image<Gray, byte> laplace_image = input.Canny(150, 50);
       Image<Gray, byte> erode_image = laplace_image.Dilate( 3 );
       Image<Gray, byte> thresholded_image = erode_image.ThresholdToZero( new Gray( 240 ) );
@@ -54,7 +49,17 @@ namespace ShaprCVTest {
       CvInvoke.Imshow("erode2", erode2_image);
       
 
-      int[,] tree = CvInvoke.FindContourTree( erode2_image, contours, ChainApproxMethod.ChainApproxSimple );
+      return CvInvoke.FindContourTree( erode2_image, output, ChainApproxMethod.ChainApproxSimple );
+    }
+
+    public static VectorOfVectorOfPoint GetContours( Image<Gray, byte> input ) {
+      VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint();
+      VectorOfVectorOfPoint contour2 = new VectorOfVectorOfPoint();
+
+      BoxSplits = new ArrayList();
+
+      int[,] tree = ExtractContours(input, contours);
+      
       int[,] tre2 = new int[tree.Length / 4, 4];
 
       int t2id = 0;
