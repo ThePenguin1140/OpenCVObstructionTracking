@@ -612,10 +612,68 @@ namespace ShaprCVTest {
      * 0 is none
      * 1 is right
      */
-    public static int MovementDirection( Mat inputImage, Rectangle ROI )
+    public static int MovementDirection( Image<Gray, byte> inputImage, Rectangle ROI )
     {
+      int offset = 50;
+      int direction = 0;
+      bool debug = true;
+      bool[] corners = new bool[4]; //top left, top right, bottom left, bottom right
+      for (int i = 0; i < 4; i++)
+      {
+        corners[i] = false;
+      }
+
+      Image<Bgr, byte> debuggingImage = null;
       
-      return 0;
+      //shrink roi to cut off edges
+      ROI.X += offset/2;
+      ROI.Y += offset/2;
+      ROI.Width -= offset;
+      ROI.Height -= offset;
+      inputImage.ROI = ROI;
+      inputImage._Not();
+      
+      if (debug)
+    {
+        debuggingImage = new Image<Bgr, byte>( ROI.Size );
+        CvInvoke.CvtColor(inputImage, debuggingImage, ColorConversion.Gray2Bgr);
+      }
+      
+      
+      VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint();
+      ExtractContours(inputImage, contours);
+
+      if (contours.Size < 2) return direction;
+      
+      for (int i = 0; i < contours.Size; i++)
+      {
+        Rectangle boundingBox = CvInvoke.BoundingRectangle(contours[i]);
+
+        //make sure it's not the whole image
+        if( boundingBox.Width == ROI.Width && boundingBox.Height == ROI.Height ) continue;
+        
+        //check if bb is in the top left
+        if ( boundingBox.Top == 1 && boundingBox.Left == 1) corners[0] = true;
+        else if ( boundingBox.Top == 1 && boundingBox.Right == ROI.Right - offset/2) corners[1] = true;
+        else if (boundingBox.Bottom == ROI.Bottom - offset/2 && boundingBox.Left == 1) corners[2] = true;
+        else if (boundingBox.Bottom == ROI.Bottom - offset/2 && boundingBox.Right == ROI.Right - offset/2) corners[3] = true;
+
+        if (debug)
+        {
+          debuggingImage.Draw( boundingBox, new Bgr(Color.Red), 2);
+        }
+      }
+
+      if (debug)
+      {
+        CvInvoke.Imshow("ROI", debuggingImage);
+        CvInvoke.WaitKey(0);
+      }
+
+      if (corners[0] && corners[3]) direction = -1;
+      else if (corners[1] && corners[2]) direction = 1;
+      
+      return direction;
     }
   }
 }
