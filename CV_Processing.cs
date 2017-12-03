@@ -151,14 +151,25 @@ namespace ShaprCVTest {
                 box1.X += box.Width - box1.Width;
               }
 
-              output.Draw( box1, bgrRed, 2 );
-              output.Draw( box2, bgrRed, 2 );
+              if (moveDirection == 0)
+              {
+                output.Draw( box1, bgrRed, 2 );
             
-              output.Draw(new Rectangle(Center(box1).X, Center(box1).Y, 2, 2), bgrBlu, 2);
-              output.Draw(new Rectangle(Center(box2).X, Center(box2).Y, 2, 2), bgrBlu, 2);
+                output.Draw(new Rectangle(Center(box1).X, Center(box1).Y, 2, 2), bgrBlu, 2);
 
-              boxesFound.Add( box1 );
-              boxesFound.Add( box2 );
+                boxesFound.Add( box1 );
+              }
+              else
+              {
+                output.Draw( box1, bgrRed, 2 );
+                output.Draw( box2, bgrRed, 2 );
+            
+                output.Draw(new Rectangle(Center(box1).X, Center(box1).Y, 2, 2), bgrBlu, 2);
+                output.Draw(new Rectangle(Center(box2).X, Center(box2).Y, 2, 2), bgrBlu, 2);
+
+                boxesFound.Add( box1 );
+                boxesFound.Add( box2 );
+              }
             }
             else
             {
