@@ -55,3 +55,7 @@ namespace ShaprCVTest
     }
   }
 }
+
+//TODO Split Tall Bounding Boxes
+//TODO Triple Split
+//TODO Multi Cups (4+)
