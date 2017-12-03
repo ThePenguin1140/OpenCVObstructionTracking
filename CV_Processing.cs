@@ -139,6 +139,7 @@ namespace ShaprCVTest {
               
               int moveDirection = MovementDirection(filtered_img, box);
               
+              Console.WriteLine( moveDirection );
               
               //The box to the back is movin right
               if (moveDirection == 1)
