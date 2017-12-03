@@ -66,6 +66,9 @@ namespace ShaprCVTest
           }
           catch (Exception e)
           {
+            //TODO jwuertz Need to make this more stable
+            //Right now it freezes on error, I'd like it to skip frames when 
+            //there's a problem.
             Console.Write("ERROR - SKIPPING FRAME: ");
             Console.WriteLine(e.Message);
             return;
