@@ -616,7 +616,7 @@ namespace ShaprCVTest {
     {
       int offset = 50;
       int direction = 0;
-      bool debug = true;
+      bool debug = false;
       bool[] corners = new bool[4]; //top left, top right, bottom left, bottom right
       for (int i = 0; i < 4; i++)
       {
@@ -651,13 +651,12 @@ namespace ShaprCVTest {
 
         //make sure it's not the whole image
         if( boundingBox.Width == ROI.Width && boundingBox.Height == ROI.Height ) continue;
-        
-        //check if bb is in the top left
-        if ( boundingBox.Top == 1 && boundingBox.Left == 1) corners[0] = true;
-        else if ( boundingBox.Top == 1 && boundingBox.Right == ROI.Right - offset/2) corners[1] = true;
-        else if (boundingBox.Bottom == ROI.Bottom - offset/2 && boundingBox.Left == 1) corners[2] = true;
-        else if (boundingBox.Bottom == ROI.Bottom - offset/2 && boundingBox.Right == ROI.Right - offset/2) corners[3] = true;
 
+        if (boundingBox.X == 1 && boundingBox.Y == 1) corners[0] = true;
+        else if (boundingBox.Y == 1 && boundingBox.Right + 1 == ROI.Width) corners[1] = true;
+        else if (boundingBox.Bottom + 1 == ROI.Height && boundingBox.X == 1) corners[2] = true;
+        else if (boundingBox.Bottom + 1 == ROI.Height && boundingBox.Right + 1 == ROI.Width) corners[3] = true;
+        
         if (debug)
         {
           debuggingImage.Draw( boundingBox, new Bgr(Color.Red), 2);
@@ -670,8 +669,8 @@ namespace ShaprCVTest {
         CvInvoke.WaitKey(0);
       }
 
-      if (corners[0] && corners[3]) direction = -1;
-      else if (corners[1] && corners[2]) direction = 1;
+      if (corners[0] && corners[3]) direction = 1;
+      else if (corners[1] && corners[2]) direction = -1;
       
       return direction;
     }
