@@ -137,7 +137,8 @@ namespace ShaprCVTest {
               box1.Y += diff;
 
               
-              int moveDirection = 0;//MovementDirection(filtered_img, box);
+              int moveDirection = MovementDirection(filtered_img, box);
+              
               
               //The box to the back is movin right
               if (moveDirection == 1)
