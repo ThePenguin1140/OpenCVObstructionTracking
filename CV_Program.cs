@@ -4,6 +4,12 @@ using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
 using Emgu.CV.Util;
 using System.Drawing;
+using System.Drawing.Text;
+using System.Net.Mime;
+using System.Threading;
+using System.Windows.Forms;
+using Emgu.CV.UI;
+using OpenTK.Graphics.OpenGL4;
 
 namespace ShaprCVTest 
 {
@@ -20,6 +26,9 @@ namespace ShaprCVTest
     public static float      AvgHeight    = 100  ;
     public static float      AvgWidth     = 100  ;
 
+    private static Capture   _capture     = null ;
+    private static bool running           = false;
+
     public static void DetectCups_Image( string ImgPath = "..\\..\\Images\\Cups.jpg", bool ShowHSV = false, bool ShowGray = false) 
     {
       Console.WriteLine( "CV_Program: DetectCups_Image(): [" + ShowHSV + ", " + ShowGray + "] " + ImgPath + "" );
@@ -35,6 +44,49 @@ namespace ShaprCVTest
 
       CvInvoke.WaitKey( 0 );
       CvInvoke.DestroyAllWindows();
+    }
+
+    public static void DetectCups_Webcam(bool ShowHSV = false, bool ShowFiltered = false)
+    {
+      CV_Program.ShowHSV = ShowHSV;
+      CV_Program.ShowFiltered = ShowFiltered;
+      int FrameRate = 30;
+
+      ImageViewer view = new ImageViewer();
+      _capture = new Capture();
+      Application.Idle += new EventHandler(delegate(object sender, EventArgs args)
+      {
+        var frame = _capture.QueryFrame();
+        if (!running)
+        {
+          //InitCupTracking(frame);
+          running = !running;
+        }
+        else
+        {
+          try
+          {
+            view.Image = DetectCups(frame);
+          }
+          catch (Exception e)
+          {
+            Console.Write("ERROR - SKIPPING FRAME: ");
+            Console.WriteLine(e.Message);
+            return;
+          }
+        }
+        int keyPressed = CvInvoke.WaitKey( 1 );
+        if (keyPressed != -1 && keyPressed != 255)
+        {
+          // Only the least-significant 16 bits contain the actual key code. The other bits contain modifier key states
+          keyPressed &= 0xFFFF;
+          if (keyPressed == 27) view.Close();
+          else if (keyPressed == 116) InitCupTracking(frame);
+          else if (keyPressed == 121) ShowMinYLine = true;
+        }
+      });
+
+      view.ShowDialog();
     }
 
     public static void DetectCups_Video( string VidPath = "..\\..\\Videos\\Cups.mp4", bool ShowHSV = false, bool ShowGray = false) 
