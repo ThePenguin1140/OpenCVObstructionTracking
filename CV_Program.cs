@@ -130,7 +130,7 @@ namespace ShaprCVTest
     	output_image = input_image.ToImage<Bgr, byte>();
     	CvInvoke.Resize( output_image, output_image, size );
 
-      PreProcessing.DrawContours( output_image, PreProcessing.GetContours( filtered_image ), output_image.Mat );
+      PreProcessing.DrawContours( output_image, PreProcessing.GetContours( filtered_image ), filtered_image );
 
     	return output_image;
     }
@@ -183,7 +183,7 @@ namespace ShaprCVTest
         MinWidth *= 1.3f;
         
         MinHeight = getMaxWidthOrHeight(heights);
-        MinHeight *= 1.10f;
+        MinHeight *= 1.15f;
         
         AvgHeight = (Cups[0].BoundingBox.Height + Cups[1].BoundingBox.Height + Cups[2].BoundingBox.Height) / 3.0f;
         AvgWidth  = (Cups[0].BoundingBox.Width  + Cups[1].BoundingBox.Width  + Cups[2].BoundingBox.Width ) / 3.0f;

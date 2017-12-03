@@ -105,7 +105,7 @@ namespace ShaprCVTest {
       return contour2;
     }
 
-    public static void DrawContours( Image<Bgr, byte> output, VectorOfVectorOfPoint contours, Mat frame = null ) {
+    public static void DrawContours( Image<Bgr, byte> output, VectorOfVectorOfPoint contours, Image<Gray, Byte> filtered_img = null ) {
       Bgr bgrRed = new Bgr( Color.Red );
       Bgr bgrBlu = new Bgr( Color.Blue );
 
@@ -123,18 +123,53 @@ namespace ShaprCVTest {
           {
             if (CV_Program.TrackCups && box.Height > CV_Program.MinHeight)
             {
+              //box2 is assumed to be the one behind box1
+              Rectangle box2 = new Rectangle( box.X, box.Y, box.Width, (int) (CV_Program.AvgHeight * 0.85f) ); 
+              Rectangle box1 = new Rectangle( box.X, box.Y, box.Width, box.Height ); 
+              
               int diff = box.Height - (int) CV_Program.MinHeight;
-              box.Height = (int)CV_Program.MinHeight;
-              box.Y += diff;
-            }
-            
-            //Draw the Box
-            output.Draw( box, bgrRed, 2 );
-          
-            //Draw Center
-            output.Draw(new Rectangle(Center(box).X, Center(box).Y, 2, 2), bgrBlu, 2);
+              box1.Height = (int)CV_Program.MinHeight;
+              box1.Y += diff;
 
-            boxesFound.Add( box );
+              
+              int moveDirection = 0;//MovementDirection(filtered_img, box);
+              
+              //The box to the back is movin right
+              if (moveDirection == 1)
+              {
+                box1.Width = (int) CV_Program.AvgWidth;
+                box2.Width = (int) CV_Program.AvgWidth;
+                
+                box2.X += box.Width - box2.Width;
+              }
+              //Moving left
+              else if (moveDirection == -1)
+              {
+                box1.Width = (int) CV_Program.AvgWidth;
+                box2.Width = (int) CV_Program.AvgWidth;
+                
+                box1.X += box.Width - box1.Width;
+              }
+
+              output.Draw( box1, bgrRed, 2 );
+              output.Draw( box2, bgrRed, 2 );
+            
+              output.Draw(new Rectangle(Center(box1).X, Center(box1).Y, 2, 2), bgrBlu, 2);
+              output.Draw(new Rectangle(Center(box2).X, Center(box2).Y, 2, 2), bgrBlu, 2);
+
+              boxesFound.Add( box1 );
+              boxesFound.Add( box2 );
+            }
+            else
+            {
+              //Draw the Box
+              output.Draw( box, bgrRed, 2 );
+          
+              //Draw Center
+              output.Draw(new Rectangle(Center(box).X, Center(box).Y, 2, 2), bgrBlu, 2);
+
+              boxesFound.Add( box );
+            }
           }
           else if ( (int)BoxSplits[i] == 2 )
           {
@@ -206,7 +241,7 @@ namespace ShaprCVTest {
         }
       }
 
-      if ( contours.Size != 0 ) ReLabelCups( boxesFound, frame );
+      if ( contours.Size != 0 ) ReLabelCups( boxesFound, output.Mat );
       if ( contours.Size != 0 ) UpdateCupTracking();
     }
 
