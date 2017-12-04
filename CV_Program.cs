@@ -51,14 +51,24 @@ namespace ShaprCVTest
       int FrameRate = 30;
 
       ImageViewer view = new ImageViewer();
+      view.Height = 700;
+      view.Width = 700;
+      view.ImageBox.Height = 700;
+      view.ImageBox.Width = 700;
       _capture = new Capture();
-      
+            
       view.ImageBox.KeyPress += new KeyPressEventHandler(delegate(object sender, KeyPressEventArgs args)
       {
         Console.WriteLine( args.KeyChar );
         if (args.KeyChar == 't')
         {
           initTracking = true;
+        }
+        
+        if (args.KeyChar == 's')
+        {
+          started = false;
+          initTracking = false;
         }
       });
       
@@ -76,17 +86,15 @@ namespace ShaprCVTest
           {
             if (started)
             {
-              view.Image = DetectCups(frame);
-            }
-            else
-            {
-              if (initTracking)
-              {
-                InitCupTracking(frame);
-                started = true;
-              } 
+              frame = DetectCups(frame).Mat;
               view.Image = frame;
             }
+            else if (initTracking && !started)
+            {
+              InitCupTracking(frame);
+              started = true;
+            } 
+            view.Image = frame;
           }
           catch (Exception e)
           {
