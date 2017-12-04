@@ -24,6 +24,8 @@ namespace ShaprCVTest
 
     private static Capture   _capture     = null ;
     private static bool running           = false;
+    private static bool started = false;
+    private static bool initTracking = false;
 
     public static void DetectCups_Image( string ImgPath = "..\\..\\Images\\Cups.jpg", bool ShowHSV = false, bool ShowGray = false) 
     {
@@ -50,6 +52,16 @@ namespace ShaprCVTest
 
       ImageViewer view = new ImageViewer();
       _capture = new Capture();
+      
+      view.ImageBox.KeyPress += new KeyPressEventHandler(delegate(object sender, KeyPressEventArgs args)
+      {
+        Console.WriteLine( args.KeyChar );
+        if (args.KeyChar == 't')
+        {
+          initTracking = true;
+        }
+      });
+      
       Application.Idle += new EventHandler(delegate(object sender, EventArgs args)
       {
         var frame = _capture.QueryFrame();
@@ -62,7 +74,19 @@ namespace ShaprCVTest
         {
           try
           {
-            view.Image = DetectCups(frame);
+            if (started)
+            {
+              view.Image = DetectCups(frame);
+            }
+            else
+            {
+              if (initTracking)
+              {
+                InitCupTracking(frame);
+                started = true;
+              } 
+              view.Image = frame;
+            }
           }
           catch (Exception e)
           {
@@ -71,17 +95,7 @@ namespace ShaprCVTest
             //there's a problem.
             Console.Write("ERROR - SKIPPING FRAME: ");
             Console.WriteLine(e.Message);
-            return;
           }
-        }
-        int keyPressed = CvInvoke.WaitKey( 1 );
-        if (keyPressed != -1 && keyPressed != 255)
-        {
-          // Only the least-significant 16 bits contain the actual key code. The other bits contain modifier key states
-          keyPressed &= 0xFFFF;
-          if (keyPressed == 27) view.Close();
-          else if (keyPressed == 116) InitCupTracking(frame);
-          else if (keyPressed == 121) ShowMinYLine = true;
         }
       });
 
