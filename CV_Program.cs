@@ -167,7 +167,7 @@ namespace ShaprCVTest
         Console.WriteLine( "CV_Program: InitCupTracking(): [" + Cups[1].CupID + "] " + Cups[1].BoundingBox);
         Console.WriteLine( "CV_Program: InitCupTracking(): [" + Cups[2].CupID + "] " + Cups[2].BoundingBox);
 
-        MinY = ((Cups[0].BoundingBox.Location.Y + Cups[1].BoundingBox.Location.Y + Cups[2].BoundingBox.Location.Y) / 3) - 80;
+        MinY = ((Cups[0].BoundingBox.Location.Y + Cups[1].BoundingBox.Location.Y + Cups[2].BoundingBox.Location.Y) / 3) - 120;
 
         float[] widths = new float[3];
         widths[0] = (float) Cups[0].BoundingBox.Width;

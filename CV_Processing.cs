@@ -139,7 +139,7 @@ namespace ShaprCVTest {
               
               int moveDirection = MovementDirection(filtered_img, box);
               
-              Console.WriteLine( moveDirection );
+              //Console.WriteLine( moveDirection );
               
               //The box to the back is movin right
               if (moveDirection == 1)
@@ -204,50 +204,78 @@ namespace ShaprCVTest {
             //otherwise, we generate the first half to be the difference between the old box and the new bigger one
             //this way, we don't simply split in half
             
-            if (ClosestOldBox.X < (box.X + 10) && ClosestOldBox.X > (box.X - 10))
+            if (ClosestOldBox.X < (box.X + ((ClosestOldBox.Height/CV_Program.MinHeight) * 10)) && ClosestOldBox.X > (box.X - ((ClosestOldBox.Height/CV_Program.MinHeight) * 10)))
             {
-              if ((ClosestOldBox.Right < (box.Right + 10) && ClosestOldBox.Right > (box.Right - 10)) || ClosestOldBox.Width > (int)((float)CV_Program.AvgWidth * 1.25f))
+              if ((ClosestOldBox.Right < (box.Right + 5) && ClosestOldBox.Right > (box.Right - 5)) || ClosestOldBox.Width > (int)((float)CV_Program.MinWidth * 1.25f))
               {
-                Console.WriteLine( "Split 2 - 1.1" );
+                //Console.WriteLine( "Split 2 - 1.1" );
                 box1 = new Rectangle(box.Right - ClosestOldBox.Width + 1, ClosestOldBox.Y, ClosestOldBox.Width, ClosestOldBox.Height);
 
                 int box2Y = GetClosestOldCupBoundingBox(box2).Y;
                 if (box2Y == box1.Y) box2Y = box.Y;
               
                 box2 = new Rectangle(box.X - 1, box2Y, (int)CV_Program.AvgWidth, (int)CV_Program.AvgHeight );
+                output.Draw( box1, bgrRed, 2 );
+                output.Draw( box2, bgrRed, 2 );
+            
+                output.Draw(new Rectangle(Center(box1).X, Center(box1).Y, 2, 2), bgrBlu, 2);
+                output.Draw(new Rectangle(Center(box2).X, Center(box2).Y, 2, 2), bgrBlu, 2);
+
+                boxesFound.Add( box1 );
+                boxesFound.Add( box2 );
+                
+                //output.Draw( box, bgrRed, 2 );
+            
+                //output.Draw(new Rectangle(Center(box).X, Center(box).Y, 2, 2), bgrBlu, 2);
+
+                //boxesFound.Add( box );
               }
               else
               {
-                Console.WriteLine( "Split 2 - 1.2" );
+                //Console.WriteLine( "Split 2 - 1.2" );
                 box1 = new Rectangle(box.X - 1, ClosestOldBox.Y, ClosestOldBox.Width, ClosestOldBox.Height);
 
                 int box2Y = GetClosestOldCupBoundingBox(box2).Y;
                 if (box2Y == box1.Y) box2Y = box.Y;
               
                 box2 = new Rectangle((box.X + box.Width + 1)-(int)CV_Program.AvgWidth, box2Y, (int)CV_Program.AvgWidth, (int)CV_Program.AvgHeight );
+                
+                output.Draw( box1, bgrRed, 2 );
+                output.Draw( box2, bgrRed, 2 );
+            
+                output.Draw(new Rectangle(Center(box1).X, Center(box1).Y, 2, 2), bgrBlu, 2);
+                output.Draw(new Rectangle(Center(box2).X, Center(box2).Y, 2, 2), bgrBlu, 2);
+
+                boxesFound.Add( box1 );
+                boxesFound.Add( box2 );
               }
             }
             else
             {
-              Console.WriteLine( "Split 2 - 2" );
+              //Console.WriteLine( "Split 2 - 2" );
               
               int box1Y = GetClosestOldCupBoundingBox(box1).Y;
               if (box1Y == ClosestOldBox.Y) box1Y = box.Y;
-              //box1 = new Rectangle(box.X - 1, box.Y, box.Width - ClosestOldBox.Width, box.Height );
-              //box1 = new Rectangle(box.X - 1, GetClosestOldCupBoundingBox(box1).Y, (int)CV_Program.AvgWidth, (int)CV_Program.AvgHeight );
-              box1 = new Rectangle(box.X - 1, box.Y, (int)CV_Program.AvgWidth, (int)CV_Program.AvgHeight );
-              box2 = new Rectangle(box.X + box1.Width + 1, ClosestOldBox.Y, ClosestOldBox.Width, ClosestOldBox.Height);
+
+              Rectangle box2BB = GetClosestOldCupBoundingBox(box2);
+              int box2Y = box2BB.Y;
+              if (box2Y == ClosestOldBox.Y) box2BB = ClosestOldBox;
+              
+              
+              box2 = new Rectangle(box.Right - ClosestOldBox.Width + 1, box2BB.Y, (int)CV_Program.AvgWidth, (int)CV_Program.AvgHeight );
+              //box1 = new Rectangle(box.X - 1, box.Y, (int)CV_Program.AvgWidth, (int)CV_Program.AvgHeight );
+              box1 = new Rectangle(box.X - 1, ClosestOldBox.Y, ClosestOldBox.Width, ClosestOldBox.Height);
+              
+              output.Draw( box1, bgrRed, 2 );
+              output.Draw( box2, bgrRed, 2 );
+            
+              output.Draw(new Rectangle(Center(box1).X, Center(box1).Y, 2, 2), bgrBlu, 2);
+              output.Draw(new Rectangle(Center(box2).X, Center(box2).Y, 2, 2), bgrBlu, 2);
+
+              boxesFound.Add( box1 );
+              boxesFound.Add( box2 );
             }
             
-
-            output.Draw( box1, bgrRed, 2 );
-            output.Draw( box2, bgrRed, 2 );
-            
-            output.Draw(new Rectangle(Center(box1).X, Center(box1).Y, 2, 2), bgrBlu, 2);
-            output.Draw(new Rectangle(Center(box2).X, Center(box2).Y, 2, 2), bgrBlu, 2);
-
-            boxesFound.Add( box1 );
-            boxesFound.Add( box2 );
           }
           else if ( (int)BoxSplits[i] == 3 )
           {
