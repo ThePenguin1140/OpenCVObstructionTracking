@@ -206,7 +206,7 @@ namespace ShaprCVTest {
             
             if (ClosestOldBox.X < (box.X + 10) && ClosestOldBox.X > (box.X - 10))
             {
-              if (ClosestOldBox.Right < (box.Right + 10) && ClosestOldBox.Right > (box.Right - 10))
+              if ((ClosestOldBox.Right < (box.Right + 10) && ClosestOldBox.Right > (box.Right - 10)) || ClosestOldBox.Width > (int)((float)CV_Program.AvgWidth * 1.25f))
               {
                 Console.WriteLine( "Split 2 - 1.1" );
                 box1 = new Rectangle(box.Right - ClosestOldBox.Width + 1, ClosestOldBox.Y, ClosestOldBox.Width, ClosestOldBox.Height);
@@ -531,8 +531,8 @@ namespace ShaprCVTest {
     }
 
     //Checks the Y location value of a bounding box
-    //If it's divisible by 800, that means it was already moved up and we add another 800 to it
-    //Else, it only just disappeared, so we set it to 800
+    //If it's divisible by 900, that means it was already moved up and we add another 900 to it
+    //Else, it only just disappeared, so we set it to 900
     private static int GetNewYForMissingBox(int id)
     {
       if (!CV_Program.Cups[id].Missing)
@@ -540,13 +540,13 @@ namespace ShaprCVTest {
         CV_Program.Cups[id].Missing = true;
         return CV_Program.Cups[id].BoundingBox.Y;
       }
-      if (CV_Program.Cups[id].BoundingBox.Y % 800 == 0)
+      if (CV_Program.Cups[id].BoundingBox.Y % 900 == 0)
       {
-        return CV_Program.Cups[id].BoundingBox.Y + 800;
+        return CV_Program.Cups[id].BoundingBox.Y + 900;
       }
       else
       {
-        return 800;
+        return 900;
       }
     }
 
